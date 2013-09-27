@@ -179,7 +179,7 @@ Hook('join', function(ply)
     set_role(ply, SPECTATOR)
     Timer(1000, function()
         draw_hud(ply)
-    )
+    end)
 end)
 
 Hook('die', function()

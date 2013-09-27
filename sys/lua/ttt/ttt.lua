@@ -28,11 +28,18 @@ RUNNING = 6
 WAITING = 7
 
 -- config
+DEBUG = false
 WEAPON_1 = {30, 20, 10}
 WEAPON_2 = {2, 4, 69}
 TIME_PREPARE = 15
 TIME_GAME = 180
 TIME_NEXTROUND = 5
+
+Color.innocent = Color(20, 220, 20)
+Color.traitor = Color(220, 20, 20)
+Color.detective = Color(20, 20, 220)
+Color.spectator = Color(220, 220, 20)
+Color.white = Color(220, 220, 220)
 
 
 -- variables
@@ -194,10 +201,10 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
         ply.health = ply.health - newdmg
         
     else
+        Karma.killed(attacker, ply)
+        
         set_role(ply, SPECTATOR)
         ply.team = 0
-        
-        Karma.killed(attacker, ply)
     end
     
     Hud.draw_health(ply)
@@ -241,16 +248,38 @@ Hook('second', function()
     end
 end)
 
+function format_message(ply, message, role)
+    local color = Color.spectator
+    if role == DETECTIVE then
+        color = Color.detective
+    elseif role == INNOCENT then
+        color = Color.innocent
+    elseif role == TRAITOR then
+        color = Color.traitor
+    end
+    
+    return color .. ply.name .. Color.white .. ': ' .. message
+end
+
 Hook('say', function(ply, message)
-    if message == 'start' then
-        round_begin()
+    if ply.team == 0 then
+        local players = Player.table
+        for _,v in pairs(players) do
+            if v.team == 0 then
+                v:msg(format_message(ply, message, SPECTATOR))
+            end
+        end
+    elseif ply.role == TRAITOR then
+        local players = Player.table
+        for _,v in pairs(players) do
+            if v.role == TRAITOR then
+                v:msg(format_message(ply, message, TRAITOR))
+            else
+                v:msg(format_message(ply, message, INNOCENT))
+            end
+        end
+    else
+        msg(format_message(ply, message, ply.role))
     end
-    
-    if message == 'team' then
-        set_teams()
-    end
-    
-    if message == 'hud' then
-        Hud.draw(ply)
-    end
+    return 1
 end)

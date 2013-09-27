@@ -23,12 +23,12 @@ end
 -- live karma
 function Karma.give_penalty(ply, value)
     ply.karma = math.max(ply.karma-value, 0)
-    --ply:msg("karma -" .. ply.karma)
+    ply:msg("karma -" .. ply.karma)
 end
 
 function Karma.give_reward(ply, value)
     ply.karma = math.min(ply.karma+value, 1500)
-    --ply:msg("karma +" .. ply.karma)
+    ply:msg("karma +" .. ply.karma)
 end
 
 function Karma.apply_karma(ply)
@@ -49,11 +49,18 @@ function Karma.hurt(attacker, victim, dmg)
         local reward = Karma.get_hurt_reward(dmg)
         Karma.give_reward(attacker, reward)
     
+        if (DEBUG) then
+            print('Karma hurt reward ' .. attacker.name .. ' ' .. reward)
+        end
+    
     elseif (attacker.role==TRAITOR) == (victim.role==TRAITOR) then
         local penalty = Karma.get_hurt_penalty(victim.karma, dmg)
         Karma.give_penalty(attacker, penalty)
         attacker.karma_clean = false
     
+        if (DEBUG) then
+            print('Karma hurt penalty ' .. attacker.name .. ' ' .. penalty)
+        end
     end
 end
 
@@ -63,12 +70,19 @@ function Karma.killed(attacker, victim)
     if attacker.role ~= TRAITOR and victim.role == TRAITOR then
         local reward = Karma.get_kill_reward()
         Karma.give_reward(attacker, reward)
+        
+        if (DEBUG) then
+            print('Karma killed reward ' .. attacker.name .. ' ' .. reward)
+        end
     
     elseif (attacker.role==TRAITOR) == (victim.role==TRAITOR) then
         local penalty = Karma.get_kill_penalty(victim.karma)
         Karma.give_penalty(attacker, penalty)
         attacker.karma_clean = false
-    
+        
+        if (DEBUG) then
+            print('Karma killed penalty ' .. attacker.name .. ' ' .. penalty)
+        end
     end
 end
 

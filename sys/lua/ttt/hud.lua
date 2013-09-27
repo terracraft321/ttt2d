@@ -37,7 +37,6 @@ function Hud.draw_base(ply)
         ply.hud.base:remove()
     end
     
-    print("draw base")
     ply.hud.base = Image('gfx/ttt_dev/base.png', Hud.x, Hud.y, 2, ply.id)
 end
 

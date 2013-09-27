@@ -1,5 +1,11 @@
-local hud_x = 105
-local hud_y = 425
+Hud = {}
+Hud.x = 105
+Hud.y = 425
+Hud.timer = 0
+Hud.timer_txt = Hudtxt(0, 1)
+Hud.timer_color = Color(220, 220, 220)
+
+
 local hud = {
     detectives={}
 }
@@ -8,34 +14,33 @@ local hud_txt1 = Hudtxt(0, 1)
 local hud_timer = 0
 
 Hook('second', function()
-    if hud_timer > 0 then
-        hud_timer = hud_timer - 1
-    end
-    draw_timer()
+    Hud.timer = math.max(Hud.timer-1, 0)
+    Hud.update_timer()
 end)
 
-function set_timer(value)
-    hud_timer = value
+function Hud.set_timer(value)
+    Hud.timer = math.max(value, 0)
 end
 
-function draw_timer()
-    local minutes = math.floor(hud_timer/60)
-    local seconds = hud_timer % 60
-    local str = Color(220, 220, 220) .. string.format("%01d:%02d", minutes, seconds)
-    hud_txt1:show(str, hud_x + 20, hud_y - 3, 0)
+function Hud.update_timer()
+    local min = math.floor(Hud.timer/60)
+    local sec = Hud.timer % 60
+    local str = Hud.timer_color .. string.format("%01d:%02d", min, sec)
+    
+    Hud.timer_txt:show(str, Hud.x+20, Hud.y-3, 0)
 end
 
-function draw_base(ply)
+function Hud.draw_base(ply)
     if ply.bot then return end
     
     if ply.hud.base then
         ply.hud.base:remove()
     end
-
-    ply.hud.base = Image('gfx/ttt_dev/base.png', hud_x, hud_y, 2, ply.id)
+    
+    ply.hud.base = Image('gfx/ttt_dev/base.png', Hud.x, Hud.y, 2, ply.id)
 end
 
-function draw_team(ply)
+function Hud.draw_role(ply)
     if ply.bot then return end
     
     if ply.hud.team then
@@ -55,16 +60,15 @@ function draw_team(ply)
         path = 'gfx/ttt_dev/spectator.png'
     end
     
-    ply.hud.team = Image(path, hud_x, hud_y, 2, ply.id)
+    ply.hud.team = Image(path, Hud.x, Hud.y, 2, ply.id)
 end
 
-function draw_health(ply)
+function Hud.draw_health(ply)
     if ply.bot then return end
     
     if not ply.hud.health then
-        ply.hud.health = Image('gfx/ttt_dev/health.png', hud_x, hud_y, 2, ply.id)
+        ply.hud.health = Image('gfx/ttt_dev/health.png', Hud.x, Hud.y, 2, ply.id)
         ply.hud.health:color(20, 170, 50)
-        --ply.hud.health:color(255, 255, 255)
     end
      
     local speed = 300
@@ -74,11 +78,11 @@ function draw_health(ply)
     local blue = 50
     
     ply.hud.health:t_scale(speed, scale, 1)
-    ply.hud.health:t_move(speed, hud_x-100 + scale*100, hud_y)
+    ply.hud.health:t_move(speed, Hud.x-100 + scale*100, Hud.y)
     ply.hud.health:t_color(speed, red, green, blue)
 end
 
-function mark_traitors(ply) 
+function Hud.mark_traitors(ply) 
     if ply.bot then return end
     if ply.hud.traitors then
         clear_traitors(ply) 
@@ -97,7 +101,17 @@ function mark_traitors(ply)
     end
 end
 
-function mark_detectives()
+function Hud.clear_traitor_marks(ply)
+    if ply.bot then return end
+    if ply.hud.traitors then
+        for k,v in pairs(ply.hud.traitors) do
+            v:remove()
+        end
+        ply.hud.traitors = nil
+    end
+end
+
+function Hud.mark_detectives()
     local players = Player.tableliving
     for _,v in pairs(players) do
         if v.role and v.role == DETECTIVE then
@@ -109,24 +123,23 @@ function mark_detectives()
     end
 end
 
-function clear_detectives()
+function Hud.clear_detective_marks()
     for k,v in pairs(hud.detectives) do
         v:remove()
     end
 end
 
-function clear_traitors(ply)
-    if ply.bot then return end
-    if ply.hud.traitors then
-        for k,v in pairs(ply.hud.traitors) do
-            v:remove()
-        end
-        ply.hud.traitors = nil
+function Hud.clear_marks()
+    Hud.clear_detective_marks()
+    
+    local players = Player.table
+    for _,ply in pairs(players) do
+        Hud.clear_traitor_marks(ply)
     end
 end
 
-function draw_hud(ply)
-    draw_base(ply)
-    draw_team(ply)
-    draw_health(ply)
+function Hud.draw(ply)
+    Hud.draw_base(ply)
+    Hud.draw_role(ply)
+    Hud.draw_health(ply)
 end

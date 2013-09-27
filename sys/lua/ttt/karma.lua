@@ -23,10 +23,12 @@ end
 -- live karma
 function Karma.give_penalty(ply, value)
     ply.karma = math.max(ply.karma-value, 0)
+    ply:msg("karma +" .. ply.karma)
 end
 
 function Karma.give_reward(ply, value)
     ply.karma = math.min(ply.karma+value, 1500)
+    ply:msg("karma -" .. ply.karma)
 end
 
 function Karma.apply_karma(ply)
@@ -90,7 +92,6 @@ function Karma.round_end()
     
     for _,ply in pairs(players) do
         ply.karma = ply.karma + 5 + (ply.karma_clean and 30 or 0)
-        Karma.apply_karma(ply)
         
         if ply.karma < 450 then
             ply:kick("Your karma went too low. Please read the rules!")

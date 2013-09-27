@@ -40,12 +40,12 @@ lock_team = true
 time = 0
 round_timer = nil
 
-function start_round()
+function round_begin()
     state = PREPARING
     
     Karma.round_begin()
     clear_items()
-    clear_detectives()
+    Hud.clear_marks()
     
     local rnd = Walk.random()
     local pos = {x=rnd.x*32+16,y=rnd.y*32+16}
@@ -53,31 +53,30 @@ function start_round()
     
     lock_team = false
     for _,ply in pairs(players) do
-        clear_traitors(ply)
         ply.team = 1
         ply:spawn(pos.x, pos.y)
         set_role(ply, PREPARING)
-        draw_health(ply)
+        Hud.draw_health(ply)
     end
     lock_team = true
     
     spawn_items()
     
     msg(Color(20,220,20).."Go get your weapons!@C")
-    set_timer(TIME_PREPARE)
+    Hud.set_timer(TIME_PREPARE)
     Timer(TIME_PREPARE*1000, function()
         state = RUNNING
         set_teams()
-        set_timer(TIME_GAME)
+        Hud.set_timer(TIME_GAME)
         
         round_timer = Timer(TIME_GAME*1000, function()
             msg(Color(220, 20, 20).."Traitors lost!@C")
-            end_round()
+            round_end()
         end)
     end)
 end
 
-function end_round()
+function round_end()
     if round_timer then
         round_timer:remove()
     end
@@ -102,7 +101,7 @@ function set_teams()
         set_role(ply, TRAITOR)
         
         Timer(1, function()
-            mark_traitors(ply)
+            Hud.mark_traitors(ply)
         end)
     end
     
@@ -117,7 +116,7 @@ function set_teams()
         set_role(ply, INNOCENT)
     end
     
-    mark_detectives()
+    Hud.mark_detectives()
     lock_team = true
 end
 
@@ -148,7 +147,7 @@ end
 
 function set_role(ply, role)
     ply.role = role
-    draw_team(ply)
+    Hud.draw_role(ply)
 end
 
 Hook('buy', function(ply)
@@ -164,7 +163,7 @@ Hook('join', function(ply)
     ply.hud = {}
     set_role(ply, SPECTATOR)
     Timer(1000, function()
-        draw_hud(ply)
+        Hud.draw(ply)
     end)
 end)
 
@@ -187,17 +186,19 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     
     local newdmg = math.ceil(hpdmg * attacker.damagefactor)
     
-    if ply.health - newdmg <= 0 then
+    Karma.hurt(attacker, ply, newdmg)
+    
+    if ply.health-newdmg > 0 then
+        ply.health = ply.health - newdmg
+        
+    else
         set_role(ply, SPECTATOR)
         ply.team = 0
         
         Karma.killed(attacker, ply)
-    else
-        ply.health = ply.health - newdmg
-        Karma.hurt(attacker, ply, newdmg)
     end
     
-    draw_health(ply)
+    Hud.draw_health(ply)
     
     return 1
 end)
@@ -218,10 +219,10 @@ Hook('second', function()
         
         if t_num == 0 and not preparing then
             msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
-            end_round()
+            round_end()
         elseif t_num == #players then
             msg(Color(220,20,20).."Traitors won!@C")
-            end_round()
+            round_end()
         end
     elseif state == WAITING then
         local players = Player.table
@@ -229,9 +230,10 @@ Hook('second', function()
             state = PREPARING
             msg(Color(220,20,220).."Next round in " .. TIME_NEXTROUND .. " seconds@C")
             clear_items()
-            set_timer(5)
+            
+            Hud.set_timer(TIME_NEXTROUND)
             Timer(TIME_NEXTROUND*1000, function()
-                start_round()
+                round_begin()
             end)
         end
     end
@@ -239,7 +241,7 @@ end)
 
 Hook('say', function(ply, message)
     if message == 'start' then
-        start_round()
+        round_begin()
     end
     
     if message == 'team' then
@@ -247,6 +249,6 @@ Hook('say', function(ply, message)
     end
     
     if message == 'hud' then
-        draw_hud(ply)
+        Hud.draw(ply)
     end
 end)

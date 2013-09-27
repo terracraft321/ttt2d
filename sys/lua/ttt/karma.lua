@@ -40,8 +40,6 @@ function Karma.apply_karma(ply)
     end
     
     ply.damagefactor = math.max(ply.damagefactor, 0.1)
-    
-    ply:msg("Your damagefactor is " .. ply.damagefactor)
 end
 
 function Karma.hurt(attacker, victim, dmg)
@@ -84,6 +82,7 @@ function Karma.round_begin()
         ply.score = ply.karma
         ply.karma_clean = true
         Karma.apply_karma(ply)
+        Hud.draw_damagefactor(ply)
     end
 end
 

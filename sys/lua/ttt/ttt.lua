@@ -31,7 +31,7 @@ WAITING = 7
 WEAPON_1 = {30, 20, 10}
 WEAPON_2 = {2, 4, 69}
 TIME_PREPARE = 15
-TIME_GAME = 300
+TIME_GAME = 180
 TIME_NEXTROUND = 5
 
 
@@ -112,13 +112,13 @@ function set_teams()
         local ply = table.remove(players, rnd)
         set_role(ply, DETECTIVE)
         
+        Hud.mark_detective(ply)
     end
     
     for _,ply in pairs(players) do  -- select innocents
         set_role(ply, INNOCENT)
     end
     
-    Hud.mark_detectives()
     lock_team = true
 end
 

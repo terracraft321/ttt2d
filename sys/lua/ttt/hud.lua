@@ -4,30 +4,30 @@ Hud.y = 425
 Hud.timer = 0
 Hud.timer_txt = Hudtxt(0, 1)
 Hud.timer_color = Color(220, 220, 220)
-
-
-local hud = {
-    detectives={}
-}
-
-local hud_txt1 = Hudtxt(0, 1)
-local hud_timer = 0
+Hud.detectives = {}
 
 Hook('second', function()
     Hud.timer = math.max(Hud.timer-1, 0)
-    Hud.update_timer()
+    Hud.draw_timer()
 end)
 
 function Hud.set_timer(value)
     Hud.timer = math.max(value, 0)
 end
 
-function Hud.update_timer()
+function Hud.draw_timer()
     local min = math.floor(Hud.timer/60)
     local sec = Hud.timer % 60
     local str = Hud.timer_color .. string.format("%01d:%02d", min, sec)
     
     Hud.timer_txt:show(str, Hud.x+20, Hud.y-3, 0)
+end
+
+function Hud.draw_damagefactor(ply)
+    if not ply.damagefactor then return end
+    local str = Hud.timer_color .. string.format("DF%.1f", ply.damagefactor)
+    
+    Hudtxt(ply, 2):show(str, Hud.x+55, Hud.y-3, 0)
 end
 
 function Hud.draw_base(ply)
@@ -112,20 +112,15 @@ function Hud.clear_traitor_marks(ply)
     end
 end
 
-function Hud.mark_detectives()
-    local players = Player.tableliving
-    for _,v in pairs(players) do
-        if v.role and v.role == DETECTIVE then
-            local img = Image('gfx/shadow.bmp<a>', 2, 0, v.id + 100)
-            img:scale(1.5, 1.5)
-            img:color(60, 60, 220)
-            table.insert(hud.detectives, img)
-        end
-    end
+function Hud.mark_detective()
+    local img = Image('gfx/shadow.bmp<a>', 2, 0, v.id + 100)
+    img:scale(1.5, 1.5)
+    img:color(60, 60, 220)
+    table.insert(Hud.detectives, img)
 end
 
 function Hud.clear_detective_marks()
-    for k,v in pairs(hud.detectives) do
+    for _,v in pairs(Hud.detectives) do
         v:remove()
     end
 end

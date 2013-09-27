@@ -230,7 +230,7 @@ Hook('second', function()
         end
         
         if t_num == 0 and not preparing then
-            msg(Color(20,220,20).."All traitors are gone!@C")
+            msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
             end_round()
         elseif t_num == #players then
             msg(Color(220,20,20).."Traitors won!@C")

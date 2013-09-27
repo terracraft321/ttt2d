@@ -2,6 +2,7 @@ dofile('sys/lua/lapi/lapi.lua')
 lapi.load('plugins/walk.lua')
 
 dofile('sys/lua/ttt/hud.lua')
+dofile('sys/lua/ttt/karma.lua')
 
 Walk.scan()
 
@@ -42,12 +43,13 @@ round_timer = nil
 function start_round()
     state = PREPARING
     
+    Karma.round_begin()
+    clear_items()
+    clear_detectives()
+    
     local rnd = Walk.random()
     local pos = {x=rnd.x*32+16,y=rnd.y*32+16}
     local players = Player.table 
-    
-    clear_items()
-    clear_detectives()
     
     lock_team = false
     for _,ply in pairs(players) do
@@ -73,8 +75,6 @@ function start_round()
             end_round()
         end)
     end)
-    
-    
 end
 
 function end_round()
@@ -82,6 +82,8 @@ function end_round()
         round_timer:remove()
     end
     
+    Karma.round_end()
+       
     state = PREPARING
     Timer(2000, function()
         state = WAITING
@@ -149,22 +151,6 @@ function set_role(ply, role)
     draw_team(ply)
 end
 
-function hook_kill(ply, attacker)
-    if attacker.role == TRAITOR then
-        if ply.role == TRAITOR then
-            attacker:msg(Color(220,20,20) .. "Stupid! You just killed a fellow traitor!@C")
-        else
-            attacker:msg(Color(20,220,20) .. "You just killed " .. ply.name .. "!@C")
-        end
-    else
-        if ply.role == DETECTIVE then
-            attacker:msg(Color(220,20,20) .. "Stupid! You just killed a friendly detective!@C")
-        elseif not ply.has_hit then
-            attacker:msg(Color(220,20,20) .. "Why did you kill him?@C")
-        end
-    end
-end
-
 Hook('buy', function(ply)
     ply:msg(Color(220,20,20) .. "Buying is not allowed!@C")
     return 1
@@ -197,22 +183,23 @@ end)
 Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     if state ~= RUNNING then return 1 end
     
-    Timer(1, function()
-        draw_health(ply)
-    end)
+    if type(attacker) ~= 'table' then return 0 end
     
-    if type(attacker) == 'table' then
-        attacker.has_hit = true
-    end
+    local newdmg = math.ceil(hpdmg * attacker.damagefactor)
     
-    if ply.health - hpdmg < 1 then
-        if type(attacker) == 'table' then
-            hook_kill(ply, attacker)
-        end
+    if ply.health - newdmg <= 0 then
         set_role(ply, SPECTATOR)
         ply.team = 0
-        return 1
+        
+        Karma.killed(attacker, ply)
+    else
+        ply.health = ply.health - newdmg
+        Karma.hurt(attacker, ply, newdmg)
     end
+    
+    draw_health(ply)
+    
+    return 1
 end)
 
 Hook('second', function()

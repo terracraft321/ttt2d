@@ -1,0 +1,405 @@
+DOCUMENTATION
+
+CORE
+
+player.lua
+
+    Player(id)
+        returns a player object
+
+    Player(table)
+        converts a table of player ids to a table of player objects
+
+    Player.table
+        a table with all players
+
+    Player.tableliving
+        a table with all living players
+
+    Player.team1
+        a table with all terrorists
+
+    Player.team2
+        a table with all counter-terrorists
+
+    Player.team1living
+        a table with all living terrorists
+
+    Player.team2living
+        a table with all living counter-terrorists
+
+    methods
+        equip(weapon)
+        setpos(x, y)
+        reqcld(mode, [parameter])
+        kick(reason)
+        banip(duration, reason)
+        banusgn(duration, reason)
+        spawn(x, y)
+        strip(wpn)
+        slap()
+        kill()
+        customkill(killer, weapon)
+        msg(message)
+        cmsg(message)
+        reroute(address)
+        shake(power)
+        flash(intensity)
+        ai_aim(x,y)
+        ai_attack(secondary)
+        ai_build(building, x, y)
+        ai_buy(itemtype)
+        ai_debug(text)
+        ai_drop()
+        ai_findtarget()
+        ai_freeline(x, y)
+        ai_goto(x, y, walk)
+        ai_iattack()
+        ai_move(angle, walk)
+        ai_radio(radioid)
+        ai_reload()
+        ai_respawn()
+        ai_rotate(angle)
+        ai_say(text)
+        ai_sayteam(text)
+        ai_selectweapon(itemtype)
+        ai_spray()
+        ai_use()
+
+    variables
+        name
+        team
+        x
+        y
+        tilex
+        tiley
+        health
+        armor
+        money
+        score
+        deaths
+        speedmod
+        maxhealth
+        weapon
+        weapons
+
+    read-only variables
+        exists
+        enemy
+        ip
+        port
+        usgn
+        ping
+        idle
+        bot
+        look
+        rot
+        teamkills
+        hostagekills
+        teambuildingkills
+        weapon
+        nightvision
+        defusekit
+        gasmask
+        bomb
+        flag
+        reloading
+        process
+        sprayname
+        spraycolor
+        votekick
+        votemap
+        favteam
+        rcon
+        ai_flash
+
+
+image.lua
+
+    Image(path, x, y, mode, [pl])
+        returns an image object
+
+    Image(id)
+        returns an image object
+
+    Image(table)
+        converts a table of image ids to a table of image objects
+
+    methods
+        remove()
+        alpha(alpha)
+        blend(mode)
+        color(red, green, blue)
+        hitzone(mode, x, y, w, h)
+        pos(x, y, rot)
+        scale(x, y)
+        t_alpha(time, alpha)
+        t_color(time, red, green, blue)
+        t_move(time, x, y, [rot])
+        t_rotate(time, rot)
+        t_rotateconstantly(speed)
+        t_scale(time, x, y)
+    
+    read-only variables
+        id
+
+
+hudtxt.lua
+
+    Hudtxt(ply, id)
+        shortcut is ply:hudtxt(id)
+        use 0 instead of ply for every player
+        returns a hudtxt object
+
+    methods
+        show(text, x, y, align)
+        hide()
+        move(duration, x, y)
+        alpha(duration, alpha)
+        color(duration, r, g, b)
+
+
+object.lua
+
+    Object(id)
+        returns an object
+
+    Object(table)
+        converts a table of object ids to a table of objects
+
+    Object(name)
+        returns corresponding type id for the name
+
+    Object.table
+        a table with all objects
+    
+    Object.spawn(type, x, y, rot, mode, team, player)
+        spawns a new object
+    
+    methods
+        :kill()
+
+    read-only variables
+        id
+        exists
+        typename
+        type
+        health
+        mode
+        team
+        player
+        x
+        y
+        rot
+        tilex
+        tiley
+        countdown
+        rootrot
+        idle
+        rotvar
+        target
+        upgrade
+        entity
+        entityx
+        entityy
+
+
+hook.lua
+
+    Hook(hook, func, [priority])
+        creates a hook which uses lapi objects instead of ids
+        returns hook object
+
+    methods
+        remove()
+
+    variables
+        id
+        hook
+        func
+        prio
+
+
+timer.lua
+
+    Timer(time, func, ...)
+        creates a timer
+        return timer object
+
+    methods
+        remove()
+
+
+map.lua
+
+    staic read-only variables
+        name
+        xsize
+        ysize
+        tileset
+        tilecount
+        back_img
+        back_scrollx
+        back_scrolly
+        back_scrolltile
+        back_r
+        back_g
+        back_b
+        storm_x
+        storm_y
+        mission_vips
+        mission_hostages
+        mission_bombspots
+        mission_ctfflags
+        mission_dompoints
+        nobuying
+        noweapons
+        teleporters
+        botnodes
+
+
+misc.lua
+
+    Color(r, g, b)
+
+
+game.lua
+
+    Game
+    
+    static variables
+        mp_antispeeder
+        mp_autogamemode
+        mp_autoteambalance
+        mp_building_health
+        mp_building_limit
+        mp_building_price
+        mp_buymenu
+        mp_buytime
+        mp_c4timer
+        mp_curtailedexplosions
+        mp_damagefactor
+        mp_deathdrop
+        mp_dispenser_health
+        mp_dispenser_money
+        mp_dmspawnmoney
+        mp_dropgrenades
+        mp_flashlight
+        mp_floodprot
+        mp_freezetime
+        mp_grenaderebuy
+        mp_hostagepenalty
+        mp_hud
+        mp_idleaction
+        mp_idlekick
+        mp_idletime
+        mp_infammo
+        mp_kevlar
+        mp_kickpercent
+        mp_killbuildingmoney
+        mp_killbuildings
+        mp_killinfo
+        mp_killteambuildings
+        mp_lagcompensation
+        mp_localrconoutput
+        mp_luamap
+        mp_luaserver
+        mp_mapgoalscore
+        mp_mapvoteratio
+        mp_maxclientsip
+        mp_maxrconfails
+        mp_natholepunching
+        mp_pinglimit
+        mp_postspawn
+        mp_radar
+        mp_randomspawn
+        mp_reservations
+        mp_respawndelay
+        mp_roundlimit
+        mp_roundtime
+        mp_shotweakening
+        mp_smokeblock
+        mp_startmoney
+        mp_supply_items
+        mp_teamkillpenalty
+        mp_teleportreload
+        mp_tempbantime
+        mp_timelimit
+        mp_tkpunish
+        mp_trace
+        mp_turretdamage
+        mp_unbuildable
+        mp_unbuyable
+        mp_vulnerablehostages
+        mp_winlimit
+        mp_wpndmg
+        mp_wpndmg_z1
+        mp_wpndmg_z2
+        mp_zombiedmg
+        mp_zombiekillequip
+        mp_zombiekillscore
+        mp_zombierecover
+        mp_zombiespeedmod
+        sv_checkusgnlogin
+        sv_fow
+        sv_friendlyfire
+        sv_gamemode
+        sv_gm
+        sv_hostport
+        sv_lan
+        sv_map
+        sv_maptransfer
+        sv_maxplayers
+        sv_msg
+        sv_msg2
+        sv_name
+        sv_password
+        sv_rcon
+        sv_rconusers
+        sv_restart
+        sv_restartround
+        sv_sound
+        sv_sound2
+        sv_specmode
+        sv_spraytransfer
+        sv_usgnonly
+
+    static read-only variables
+        version
+        dedicated
+        phase
+        round
+        score_t
+        score_ct
+        winrow_t
+        winrow_ct
+        nextmap
+        port
+        bombplanted
+
+
+PLUGINS
+
+menu.lua
+
+    Menu.next_page
+        text for "Next Page" -button
+
+    ply:menu(title)
+        returns a menu object
+    
+    methods
+        button(key, value)
+        bind(func)
+            bind menu to a function; it will be called as func(ply, key, value)
+
+
+file.lua
+
+    File(path)
+        returns a file object
+    
+    methods
+        read()
+        write(data)
+

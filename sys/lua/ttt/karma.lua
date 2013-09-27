@@ -23,12 +23,12 @@ end
 -- live karma
 function Karma.give_penalty(ply, value)
     ply.karma = math.max(ply.karma-value, 0)
-    ply:msg("karma -" .. ply.karma)
+    --ply:msg("karma -" .. ply.karma)
 end
 
 function Karma.give_reward(ply, value)
     ply.karma = math.min(ply.karma+value, 1500)
-    ply:msg("karma +" .. ply.karma)
+    --ply:msg("karma +" .. ply.karma)
 end
 
 function Karma.apply_karma(ply)

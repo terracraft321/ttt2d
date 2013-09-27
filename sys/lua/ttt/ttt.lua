@@ -9,7 +9,7 @@ Walk.scan()
 -- game settings
 Game.mp_autoteambalance = 0
 Game.mp_teamkillpenalty = 0
-Game.mp_damagefactor = 1.3
+Game.mp_damagefactor = 1.1
 Game.mp_killinfo = 0
 Game.sv_friendlyfire = 1
 Game.mp_hud = 0

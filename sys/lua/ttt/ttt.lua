@@ -14,7 +14,8 @@ Game.mp_killinfo = 0
 Game.sv_friendlyfire = 1
 Game.mp_hud = 0
 Game.mp_radar = 0
-Game.sv_gamemode = 2
+Game.sv_gamemode = 1
+Game.sv_fow = 1
 Parse('mp_wpndmg', 'USP', 30)
 
 -- constant
@@ -47,12 +48,13 @@ function round_begin()
     clear_items()
     Hud.clear_marks()
     
-    local rnd = Walk.random()
-    local pos = {x=rnd.x*32+16,y=rnd.y*32+16}
     local players = Player.table 
     
     lock_team = false
     for _,ply in pairs(players) do
+        local rnd = Walk.random()
+        local pos = {x=rnd.x*32+16,y=rnd.y*32+16}
+        
         ply.team = 1
         ply:spawn(pos.x, pos.y)
         set_role(ply, PREPARING)

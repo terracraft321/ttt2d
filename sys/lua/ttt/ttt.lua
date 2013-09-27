@@ -28,8 +28,8 @@ WAITING = 7
 -- config
 WEAPON_1 = {30, 20, 10}
 WEAPON_2 = {2, 4, 69}
-TIME_PREPARE = 1
-TIME_GAME = 300
+TIME_PREPARE = 15
+TIME_GAME = 10
 TIME_NEXTROUND = 5
 
 
@@ -37,6 +37,7 @@ TIME_NEXTROUND = 5
 state = WAITING
 lock_team = true
 time = 0
+round_timer = nil
 
 function start_round()
     state = PREPARING
@@ -66,6 +67,24 @@ function start_round()
         state = RUNNING
         set_teams()
         set_timer(TIME_GAME)
+        
+        round_timer = Timer(TIME_GAME*1000, function()
+            msg(Color(220, 20, 20).."Traitors lost!@C")
+            end_round()
+        end)
+    end)
+    
+    
+end
+
+function end_round()
+    if round_timer then
+        round_timer:remove()
+    end
+    
+    state = PREPARING
+    Timer(2000, function()
+        state = WAITING
     end)
 end
 
@@ -209,17 +228,11 @@ Hook('second', function()
         end
         
         if t_num == 0 and not preparing then
-            state = PREPARING
             msg(Color(20,220,20).."All traitors are gone!@C")
-            Timer(2000, function()
-                state = WAITING
-            end)
+            end_round()
         elseif t_num == #players then
-            state = PREPARING
             msg(Color(220,20,20).."Traitors won!@C")
-            Timer(2000, function()
-                state = WAITING
-            end)
+            end_round()
         end
     elseif state == WAITING then
         local players = Player.table

@@ -98,12 +98,12 @@ function TTT.round_begin()
                     Color.white, "Time ran out! ",
                     Color.traitor, "Traitors ",
                     Color.white, "lost!@C"}))
-            TTT.round_end()
+            TTT.round_end(INNOCENT)
         end)
     end)
 end
 
-function TTT.round_end()
+function TTT.round_end(winner)
     if TTT.round_timer then
         TTT.round_timer:remove()
     end
@@ -112,8 +112,16 @@ function TTT.round_end()
     for _,str in pairs(TTT.traitors) do
         msg(Color.traitor .. str)
     end
+    
+    local players = Player.table
+    for _,ply in pairs(players) do
+        if ply.killer then
+            ply:msg(Color.white .. "You were killed by " .. killer.name .. "@C")
+            ply.killer = nil
+        end
+    end
     TTT.traitors = {}
-    Karma.round_end()
+    Karma.round_end(winner)
        
     state = PREPARING
     Timer(2000, function()
@@ -335,6 +343,7 @@ Hook('leave', function(ply)
     if ply.badge then
         ply.badge:remove()
     end
+    ply.killer = nil
     Karma.save_karma(ply)
     Hud.clear_traitor_marks(ply)
     Hud.clear(ply)
@@ -398,7 +407,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
         
     else
         Karma.killed(attacker, ply)
-        
+        ply.killer = attacker
         TTT.set_mia(ply, weapon)
     end
     
@@ -430,13 +439,13 @@ Hook('second', function()
                     Color.innocent, "Innocent won!@C"}))
                     
             --msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
-            TTT.round_end()
+            TTT.round_end(INNOCENT)
         elseif i_num == 0 then
             msg(table.concat({
                     Color.traitor, "Traitors ",
                     Color.white, "won!@C"}))
             --msg(Color(220,20,20).."Traitors won!@C")
-            TTT.round_end()
+            TTT.round_end(TRAITOR)
         end
     elseif state == WAITING then
         local players = Player.table

@@ -156,7 +156,7 @@ function Karma.round_begin()
     end
 end
 
-function Karma.round_end()
+function Karma.round_end(winner)
     local players = Player.table
     
     for _,ply in pairs(players) do
@@ -164,6 +164,10 @@ function Karma.round_end()
             Karma.load_karma(ply)
         else
             Karma.save_karma(ply)
+        end
+        
+        if ply.role == winner and ply:is_traitor() then
+            ply:give_reward(ply, 50)
         end
         
         Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))

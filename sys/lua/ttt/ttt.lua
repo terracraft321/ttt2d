@@ -325,10 +325,10 @@ Hook('die', function(ply)
         TTT.mia[ply.id] = nil
     end
     
-    lock_team = false
+    --lock_team = false
     ply:set_role(SPECTATOR)
     ply.team = 0
-    lock_team = true
+    --lock_team = true
     
     return 1
 end)

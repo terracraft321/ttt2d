@@ -1,10 +1,14 @@
 ©220020020TTT - Trouble in Terrorist Town
 
-©255255255It's all about TRAITOR versus INNOCENT
-©255255255A small group of Traitors is randomly picked.
-©255255255Together they have to kill all the Innocent.
-©255255255The Innocent do not know who is a Traitor and who isn't.
-©255255255The Traitors must use this fact, because they are outnumbered.
+©220020020  It's all about Traitor versus Innocent
+©255255255Every round a small group of Traitors is randomly picked. Together they have to kill all the Innocent. However the Innocent do not know who is a Traitor and who isn't. You can trust nobody.
+
+©220020020  Karma
+©255255255Your score on scoreboard is your karma and it tells you how well you play. If you let your karma drop below 1000, you'll get punished e.g. your damage towards other players is reduced.
 
 ©220020020  Rules
-©2552552551. As innocent, do not kill too easily. This also costs you a lot of points.
+©2552552551. If you're new to this gamemode, read the instructions
+©2552552552. Please do not RDM (kill people for no reason except if you're a Traitor)
+
+©120220120This gamemode is open source:
+»http://unrealsoftware.de/forum_posts.php?post=362137«

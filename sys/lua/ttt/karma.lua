@@ -13,11 +13,6 @@ Karma.debug = Debug(false, function(message)
 end)
 
 
-function Karma.get_penalty_multiplier(karma)
-    local halflife = Karma.max * Karma.halflife
-    return math.exponential_decay(halflife, Karma.base-karma)
-end
-
 -- rewards
 function Karma.get_hurt_reward(dmg)
     return Karma.max * dmg * Karma.hurt_reward
@@ -37,6 +32,11 @@ function Karma.give_reward(ply, value)
 end
 
 -- penalties
+function Karma.get_penalty_multiplier(karma)
+    local halflife = Karma.max * Karma.halflife
+    return math.exponential_decay(halflife, Karma.base-karma)
+end
+
 function Karma.get_hurt_penalty(victim_karma, dmg)
     if victim_karma < 1000 then
         dmg = dmg * Karma.get_penalty_multiplier(victim_karma)
@@ -52,8 +52,6 @@ function Karma.give_penalty(ply, value)
     ply.karma = math.max(ply.karma-value, 0)
 end
 
-
--- modify damagefactor based on karma
 function Karma.apply_karma(ply)
     if ply.karma < 1000 then
         ply.damagefactor = Karma.get_penalty_multiplier(ply.karma)
@@ -66,7 +64,7 @@ function Karma.apply_karma(ply)
 end
 
 function Karma.reset(ply)
-    ply.karma = 1000
+    ply.karma = Karma.base
 end
 
 function Karma.hurt(attacker, victim, dmg)
@@ -105,12 +103,51 @@ function Karma.killed(attacker, victim)
     end
 end
 
+function Karma.load_karma(ply)
+    if not ply.usgn then
+        ply.karma = 800
+        ply:remind_karma_limited(5000)
+        ply:remind_new_player(6000)
+        return
+    end
+    
+    Karma.debug('Karma load ' .. ply.name .. ' ' .. ply.usgn)
+    
+    local f = File('sys/lua/ttt/karma/' .. ply.usgn .. '.txt')
+    local data = f:read()
+    if type(data) == 'table' and data.karma then
+        ply.karma = data.karma
+        
+        if ply.karma < 600 then
+            ply.karma = 600
+        end
+        
+        ply:welcome_back(3000)
+    else
+        ply.karma = Karma.base
+        ply:remind_new_player(3000)
+    end
+    
+    Karma.debug('Karma loaded ' .. ply.name .. ' ' .. ply.karma)
+end
+
+function Karma.save_karma(ply)
+    if not ply.usgn then
+        return
+    end
+    
+    local f = File('sys/lua/ttt/karma/' .. ply.usgn .. '.txt')
+    f:write({karma=ply.karma})
+    
+    Karma.debug('Karma save ' .. ply.name .. ' ' .. ply.usgn)
+end
+
 function Karma.round_begin()
     local players = Player.table
     
     for _,ply in pairs(players) do
         if not ply.karma then
-            ply.karma = 1000
+            Karma.load_karma(ply)
         end
         ply.score = ply.karma
         ply.karma_clean = true
@@ -124,7 +161,9 @@ function Karma.round_end()
     
     for _,ply in pairs(players) do
         if not ply.karma then
-            ply.karma = 1000
+            Karma.load_karma(ply)
+        else
+            Karma.save_karma(ply)
         end
         
         Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))

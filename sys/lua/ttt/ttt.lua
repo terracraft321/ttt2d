@@ -161,7 +161,7 @@ function clear_items()
 end
 
 Hook('buy', function(ply)
-    ply:msg(Color(220,20,20) .. "Buying is not allowed!@C")
+    ply:msg(Color.traitor .. "Buying is not allowed!@C")
     return 1
 end)
 
@@ -173,6 +173,7 @@ Hook('join', function(ply)
     ply.hud = {}
     ply:set_role(SPECTATOR)
     Karma.reset(ply)
+    Karma.load_karma(ply)
     Timer(1000, function()
         Hud.draw(ply)
     end)

@@ -90,7 +90,7 @@ function TTT.round_begin()
         
         TTT.round_timer = Timer(TIME_GAME*1000, function()
             --msg(Color(220, 20, 20).."Traitors lost!@C")
-            ply:msg(table.concat({
+            msg(table.concat({
                     Color.white, "Time ran out! ",
                     Color.traitor, "Traitors ",
                     Color.white, "lost!@C"}))

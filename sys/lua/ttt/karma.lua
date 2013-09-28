@@ -1,49 +1,66 @@
 Karma = {}
-Karma.max = 2000
+Karma.base = 1000
+Karma.max = 1500
+Karma.halflife = 0.2
+Karma.hurt_reward = 0.0003
+Karma.kill_reward = 40
+Karma.hurt_penalty = 0.0015
+Karma.kill_penalty = 15
+Karma.debug = Debug(false, function(message)
+    msg(Color(220, 20, 220) .. message)
+end)
 
 
--- penalty calculations
-function Karma.get_hurt_penalty(victim_karma, dmg)
-    return victim_karma * dmg * 0.0015
+function Karma.get_penalty_multiplier(karma)
+    local halflife = Karma.max * Karma.halflife
+    return math.exponential_decay(halflife, Karma.base-karma)
 end
 
-function Karma.get_kill_penalty(victim_karma)
-    return Karma.get_hurt_penalty(victim_karma, 15)
-end
-
--- reward calculations
+-- rewards
 function Karma.get_hurt_reward(dmg)
-    return Karma.max * dmg * 0.0003
+    return Karma.max * dmg * Karma.hurt_reward
 end
 
 function Karma.get_kill_reward()
-    return Karma.get_hurt_reward(40)
-end
-
-
--- live karma
-function Karma.give_penalty(ply, value)
-    ply.karma = math.max(ply.karma-value, 0)
-    --ply:msg("karma -" .. ply.karma)
+    return Karma.get_hurt_reward(Karma.kill_reward)
 end
 
 function Karma.give_reward(ply, value)
-    if ply.karma > 1000 then
-        value = value*math.exp((-0.69314718 / (Karma.max*0.25)) * (Karma.max-ply.karma))
+    if ply.karma > 1000 then -- make it harder to reach Karma.max
+        local halflife = (Karma.max-Karma.base) * Karma.halflife
+        value = value * math.exponential_decay(halflife, ply.karma-Karma.base)
     end
+    
     ply.karma = math.min(ply.karma+value, Karma.max)
-    --ply:msg("karma +" .. ply.karma)
 end
 
+-- penalties
+function Karma.get_hurt_penalty(victim_karma, dmg)
+    if victim_karma < 1000 then
+        dmg = dmg * Karma.get_penalty_multiplier(victim_karma)
+    end
+    return victim_karma * dmg * Karma.hurt_penalty
+end
+
+function Karma.get_kill_penalty(victim_karma)
+    return Karma.get_hurt_penalty(victim_karma, Karma.kill_penalty)
+end
+
+function Karma.give_penalty(ply, value)
+    ply.karma = math.max(ply.karma-value, 0)
+end
+
+
+-- modify damagefactor based on karma
 function Karma.apply_karma(ply)
     if ply.karma < 1000 then
-        local k = ply.karma - 1000
-        ply.damagefactor = 1 + (0.0007 * k) + (-0.000002 * (k^2))
+        ply.damagefactor = Karma.get_penalty_multiplier(ply.karma)
     else
         ply.damagefactor = 1
     end
     
     ply.damagefactor = math.max(ply.damagefactor, 0.1)
+    Karma.debug('Karma damagefactor ' .. ply.name .. ' ' .. ply.damagefactor)
 end
 
 function Karma.reset(ply)
@@ -57,18 +74,14 @@ function Karma.hurt(attacker, victim, dmg)
         local reward = Karma.get_hurt_reward(dmg)
         Karma.give_reward(attacker, reward)
     
-        if (DEBUG) then
-            print('Karma hurt reward ' .. attacker.name .. ' ' .. reward)
-        end
+        Karma.debug('Karma hurt reward ' .. attacker.name .. ' ' .. reward)
     
     elseif attacker:is_traitor() == victim:is_traitor() then
         local penalty = Karma.get_hurt_penalty(victim.karma, dmg)
         Karma.give_penalty(attacker, penalty)
         attacker.karma_clean = false
     
-        if (DEBUG) then
-            print('Karma hurt penalty ' .. attacker.name .. ' ' .. penalty)
-        end
+        Karma.debug('Karma hurt penalty ' .. attacker.name .. ' ' .. penalty)
     end
 end
 
@@ -79,18 +92,14 @@ function Karma.killed(attacker, victim)
         local reward = Karma.get_kill_reward()
         Karma.give_reward(attacker, reward)
         
-        if (DEBUG) then
-            print('Karma killed reward ' .. attacker.name .. ' ' .. reward)
-        end
+        Karma.debug('Karma killed reward ' .. attacker.name .. ' ' .. reward)
     
     elseif attacker:is_traitor() == victim:is_traitor() then
         local penalty = Karma.get_kill_penalty(victim.karma)
         Karma.give_penalty(attacker, penalty)
         attacker.karma_clean = false
         
-        if (DEBUG) then
-            print('Karma killed penalty ' .. attacker.name .. ' ' .. penalty)
-        end
+        Karma.debug('Karma killed penalty ' .. attacker.name .. ' ' .. penalty)
     end
 end
 

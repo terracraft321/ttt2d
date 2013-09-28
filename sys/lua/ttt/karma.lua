@@ -167,7 +167,7 @@ function Karma.round_end(winner)
         end
         
         if ply.role == winner and ply:is_traitor() then
-            ply:give_reward(ply, 50)
+            Karma.give_reward(ply, 50)
         end
         
         Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))

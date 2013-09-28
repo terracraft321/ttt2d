@@ -133,6 +133,8 @@ function TTT.set_mia(ply, weapon)
     
     local img = Image('gfx/ttt_dev/body.png', ply.x, ply.y, 0)
     img:pos(ply.x, ply.y, ply.rot-180)
+    img:alpha(0)
+    img:t_alpha(1000, 0.5)
     
     local tbl = {
         ply = ply,
@@ -271,6 +273,7 @@ Hook('use', function(ply)
                 lock_team = false
                 
                 v.found = true
+                v.img:t_alpha(1000, 1)
                 v.ply:set_role(SPECTATOR)
                 v.ply.team = 0
                 

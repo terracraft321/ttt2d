@@ -53,6 +53,7 @@ lock_team = true
 time = 0
 TTT.round_timer = nil
 TTT.mia = {}
+TTT.traitors = {}
 
 function TTT.round_begin()
     print('round begin')
@@ -103,6 +104,9 @@ function TTT.round_end()
         TTT.round_timer:remove()
     end
     
+    msg(Color.white .. "Traitors were:" .. Color.traitor .. table.concat(TTT.traitors, " "))
+    
+    TTT.traitors = {}
     Karma.round_end()
        
     state = PREPARING
@@ -171,6 +175,8 @@ function set_teams()
         ply:set_role(TRAITOR)
         ply:equip(32)
         ply:equip(52)
+        
+        table.insert(TTT.traitors, ply.name)
         
         Timer(1, function()
             Hud.mark_traitors(ply)
@@ -254,9 +260,10 @@ Hook('use', function(ply)
             if not v.found then
                 lock_team = false
                 
+                v.found = true
                 v.ply:set_role(SPECTATOR)
                 v.ply.team = 0
-                v.found = true
+                
                 
                 local color = get_mia_color(v)
 
@@ -320,7 +327,7 @@ Hook('join', function(ply)
 end)
 
 Hook('die', function(ply)
-    if TTT.mia[ply.id] then
+    if TTT.mia[ply.id] and not TTT.mia[ply.id].found then
         TTT.mia[ply.id].img:remove()
         TTT.mia[ply.id] = nil
     end

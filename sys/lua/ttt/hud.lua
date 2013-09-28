@@ -67,6 +67,7 @@ end
 
 function Hud.draw_health(ply)
     if ply.bot then return end
+    if not ply.hud then return end
     
     if not ply.hud.health then
         ply.hud.health = Image('gfx/ttt_dev/health.png', Hud.x, Hud.y, 2, ply.id)

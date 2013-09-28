@@ -80,7 +80,7 @@ function TTT.round_begin()
     
     spawn_items()
     
-    msg(Color(20,220,20).."Go get your weapons!@C")
+    msg(Color.white .. "Go get your weapons!@C")
     Hud.set_timer(TIME_PREPARE)
     Timer(TIME_PREPARE*1000, function()
         state = RUNNING
@@ -88,7 +88,11 @@ function TTT.round_begin()
         Hud.set_timer(TIME_GAME)
         
         TTT.round_timer = Timer(TIME_GAME*1000, function()
-            msg(Color(220, 20, 20).."Traitors lost!@C")
+            --msg(Color(220, 20, 20).."Traitors lost!@C")
+            ply:msg(table.concat({
+                    Color.white, "Time ran out! ",
+                    Color.traitor, "Traitors ",
+                    Color.white, "lost!@C"}))
             TTT.round_end()
         end)
     end)
@@ -257,8 +261,7 @@ Hook('use', function(ply)
                 msg(table.concat({
                     Color.innocent, ply.name,
                     Color.white, " found the body of ",
-                    color, v.ply.name, "!@C"}))
-                --msg(Color.innocent .. ply.name .. " found the body of " .. v.ply.name .. " who was " .. role .. "@C")
+                    color, v.ply.name, "@C"}))
                 
                 lock_team = true
             else
@@ -267,7 +270,6 @@ Hook('use', function(ply)
                 ply:msg(table.concat({
                     Color.white, "This body belongs to ",
                     color, v.ply.name, "!@C"}))
-                --ply:msg(Color.innocent .. "This body belongs to " .. v.ply.name .. " who was " .. role .. "@C")
             end
             
             if ply.role == DETECTIVE then
@@ -368,17 +370,28 @@ Hook('second', function()
         end
         
         if t_num == 0 then
-            msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
+            msg(table.concat({
+                    Color.white, "All traitors are gone! ",
+                    Color.innocent, "Innocent won!@C"}))
+                    
+            --msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
             TTT.round_end()
         elseif i_num == 0 then
-            msg(Color(220,20,20).."Traitors won!@C")
+            msg(table.concat({
+                    Color.traitor, "Traitors ",
+                    Color.white, "won!@C"}))
+            --msg(Color(220,20,20).."Traitors won!@C")
             TTT.round_end()
         end
     elseif state == WAITING then
         local players = Player.table
         if #players > 1 then
             state = PREPARING
-            msg(Color(220,220,220).."Next round in " .. TIME_NEXTROUND .. " seconds@C")
+            msg(table.concat({
+                    Color.white, "Next round in ",
+                    Color.traitor, TIME_NEXTROUND,
+                    Color.white, " seconds@C"}))
+           -- msg(Color(220,220,220).."Next round in " .. TIME_NEXTROUND .. " seconds@C")
             clear_items()
             
             Hud.set_timer(TIME_NEXTROUND)

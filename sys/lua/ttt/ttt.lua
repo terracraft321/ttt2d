@@ -104,8 +104,10 @@ function TTT.round_end()
         TTT.round_timer:remove()
     end
     
-    msg(Color.white .. "Traitors were:" .. Color.traitor .. table.concat(TTT.traitors, " "))
-    
+    msg(Color.white .. "Traitors were:")
+    for _,str in pairs(TTT.traitors) do
+        msg(Color.traitor .. str)
+    end
     TTT.traitors = {}
     Karma.round_end()
        
@@ -174,7 +176,7 @@ function set_teams()
         local ply = table.remove(players, rnd)
         ply:set_role(TRAITOR)
         ply:equip(32)
-        ply:equip(52)
+        ply:equip(1)
         
         table.insert(TTT.traitors, ply.name)
         

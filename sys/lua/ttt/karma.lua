@@ -27,6 +27,11 @@ function Karma.give_penalty(ply, value)
 end
 
 function Karma.give_reward(ply, value)
+    if ply.karma > 1000 then
+        ply:msg("reward +" .. value)
+        value = value*math.exp((-0.69314718 / 125) * (1500-ply.karma))
+        ply:msg("reward after +" .. value)
+    end
     ply.karma = math.min(ply.karma+value, 1500)
     --ply:msg("karma +" .. ply.karma)
 end
@@ -45,7 +50,7 @@ end
 function Karma.hurt(attacker, victim, dmg)
     if attacker == victim then return end
     
-    if attacker.role ~= TRAITOR and victim.role == TRAITOR then
+    if not attacker:is_traitor() and victim:is_traitor() then
         local reward = Karma.get_hurt_reward(dmg)
         Karma.give_reward(attacker, reward)
     
@@ -53,7 +58,7 @@ function Karma.hurt(attacker, victim, dmg)
             print('Karma hurt reward ' .. attacker.name .. ' ' .. reward)
         end
     
-    elseif (attacker.role==TRAITOR) == (victim.role==TRAITOR) then
+    elseif attacker:is_traitor() == victim:is_traitor() then
         local penalty = Karma.get_hurt_penalty(victim.karma, dmg)
         Karma.give_penalty(attacker, penalty)
         attacker.karma_clean = false
@@ -67,7 +72,7 @@ end
 function Karma.killed(attacker, victim)
     if attacker == victim then return end
 
-    if attacker.role ~= TRAITOR and victim.role == TRAITOR then
+    if not attacker:is_traitor() and victim:is_traitor() then
         local reward = Karma.get_kill_reward()
         Karma.give_reward(attacker, reward)
         
@@ -75,7 +80,7 @@ function Karma.killed(attacker, victim)
             print('Karma killed reward ' .. attacker.name .. ' ' .. reward)
         end
     
-    elseif (attacker.role==TRAITOR) == (victim.role==TRAITOR) then
+    elseif attacker:is_traitor() == victim:is_traitor() then
         local penalty = Karma.get_kill_penalty(victim.karma)
         Karma.give_penalty(attacker, penalty)
         attacker.karma_clean = false
@@ -108,7 +113,7 @@ function Karma.round_end()
             ply.karma = 1000
         end
         
-        ply.karma = ply.karma + 5 + (ply.karma_clean and 30 or 0)
+        Karma.give_reward(ply, 5 + (ply.karma_clean and 30 or 0))
         
         if ply.karma < 450 and not ply.bot then
             ply:kick("Your karma went too low. Please read the rules!")

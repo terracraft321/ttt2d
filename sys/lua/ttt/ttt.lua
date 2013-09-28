@@ -2,7 +2,9 @@ dofile('sys/lua/lapi/lapi.lua')
 lapi.load('plugins/walk.lua')
 
 dofile('sys/lua/ttt/hud.lua')
+dofile('sys/lua/ttt/player.lua')
 dofile('sys/lua/ttt/karma.lua')
+
 
 Walk.scan()
 
@@ -16,6 +18,7 @@ Game.mp_hud = 0
 Game.mp_radar = 0
 Game.sv_gamemode = 1
 Game.sv_fow = 1
+Game.mp_mapvoteratio = 0
 Parse('mp_wpndmg', 'USP', 30)
 
 -- constant
@@ -41,6 +44,7 @@ Color.detective = Color(20, 20, 220)
 Color.spectator = Color(220, 220, 20)
 Color.white = Color(220, 220, 220)
 
+TTT = {}
 
 -- variables
 state = WAITING
@@ -48,7 +52,7 @@ lock_team = true
 time = 0
 round_timer = nil
 
-function round_begin()
+function TTT.round_begin()
     state = PREPARING
     
     Karma.round_begin()
@@ -64,7 +68,8 @@ function round_begin()
         
         ply.team = 1
         ply:spawn(pos.x, pos.y)
-        set_role(ply, PREPARING)
+        ply:set_role(PREPARING)
+        
         Hud.draw_health(ply)
     end
     lock_team = true
@@ -80,12 +85,12 @@ function round_begin()
         
         round_timer = Timer(TIME_GAME*1000, function()
             msg(Color(220, 20, 20).."Traitors lost!@C")
-            round_end()
+            TTT.round_end()
         end)
     end)
 end
 
-function round_end()
+function TTT.round_end()
     if round_timer then
         round_timer:remove()
     end
@@ -107,7 +112,8 @@ function set_teams()
     for i=1,t_num do  -- select traitors
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
-        set_role(ply, TRAITOR)
+        ply:set_role(TRAITOR)
+        ply:equip(32)
         
         Timer(1, function()
             Hud.mark_traitors(ply)
@@ -117,13 +123,13 @@ function set_teams()
     for i=1,d_num do  -- select detectives
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
-        set_role(ply, DETECTIVE)
+        ply:set_role(DETECTIVE)
         
         Hud.mark_detective(ply)
     end
     
     for _,ply in pairs(players) do  -- select innocents
-        set_role(ply, INNOCENT)
+        ply:set_role(INNOCENT)
     end
     
     lock_team = true
@@ -154,11 +160,6 @@ function clear_items()
     end
 end
 
-function set_role(ply, role)
-    ply.role = role
-    Hud.draw_role(ply)
-end
-
 Hook('buy', function(ply)
     ply:msg(Color(220,20,20) .. "Buying is not allowed!@C")
     return 1
@@ -170,7 +171,7 @@ end)
 
 Hook('join', function(ply)
     ply.hud = {}
-    set_role(ply, SPECTATOR)
+    ply:set_role(SPECTATOR)
     Timer(1000, function()
         Hud.draw(ply)
     end)
@@ -203,7 +204,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     else
         Karma.killed(attacker, ply)
         
-        set_role(ply, SPECTATOR)
+        ply:set_role(SPECTATOR)
         ply.team = 0
     end
     
@@ -221,17 +222,17 @@ Hook('second', function()
         local t_num = 0
         
         for _,ply in pairs(players) do
-            if ply.role == TRAITOR then
+            if ply:is_traitor() then
                 t_num = t_num + 1
             end
         end
         
-        if t_num == 0 and not preparing then
+        if t_num == 0 then
             msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
-            round_end()
+            TTT.round_end()
         elseif t_num == #players then
             msg(Color(220,20,20).."Traitors won!@C")
-            round_end()
+            TTT.round_end()
         end
     elseif state == WAITING then
         local players = Player.table
@@ -242,7 +243,7 @@ Hook('second', function()
             
             Hud.set_timer(TIME_NEXTROUND)
             Timer(TIME_NEXTROUND*1000, function()
-                round_begin()
+                TTT.round_begin()
             end)
         end
     end
@@ -261,18 +262,30 @@ function format_message(ply, message, role)
     return color .. ply.name .. Color.white .. ': ' .. message
 end
 
+Hook('sayteam', function(ply, message)
+    if ply.role == TRAITOR then
+        local players = Player.table
+        for _,v in pairs(players) do
+            if v:is_traitor() then
+                v:msg('(TEAM)'..format_message(ply, message, TRAITOR))
+            end
+        end
+    end
+    return 1
+end)
+
 Hook('say', function(ply, message)
     if ply.team == 0 then
         local players = Player.table
         for _,v in pairs(players) do
-            if v.team == 0 then
+            if v.team == 0 or state ~= RUNNING then
                 v:msg(format_message(ply, message, SPECTATOR))
             end
         end
     elseif ply.role == TRAITOR then
         local players = Player.table
         for _,v in pairs(players) do
-            if v.role == TRAITOR then
+            if v:is_traitor() then
                 v:msg(format_message(ply, message, TRAITOR))
             else
                 v:msg(format_message(ply, message, INNOCENT))

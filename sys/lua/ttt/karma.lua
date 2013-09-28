@@ -4,7 +4,7 @@ Karma.max = 2000
 
 -- penalty calculations
 function Karma.get_hurt_penalty(victim_karma, dmg)
-    return victim_karma * dmg * 0.001
+    return victim_karma * dmg * 0.0015
 end
 
 function Karma.get_kill_penalty(victim_karma)
@@ -116,7 +116,7 @@ function Karma.round_end()
             ply.karma = 1000
         end
         
-        Karma.give_reward(ply, 5 + (ply.karma_clean and 30 or 0))
+        Karma.give_reward(ply, 2 + (ply.karma_clean and 30 or 0))
         
         if ply.karma < 500 and not ply.bot then
             ply:kick("Your karma went too low. Please read the rules!")

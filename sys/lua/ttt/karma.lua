@@ -6,6 +6,8 @@ Karma.hurt_reward = 0.0003
 Karma.kill_reward = 40
 Karma.hurt_penalty = 0.0015
 Karma.kill_penalty = 15
+Karma.regen = 5
+Karma.clean = 30
 Karma.debug = Debug(false, function(message)
     msg(Color(220, 20, 220) .. message)
 end)
@@ -125,7 +127,7 @@ function Karma.round_end()
             ply.karma = 1000
         end
         
-        Karma.give_reward(ply, 2 + (ply.karma_clean and 30 or 0))
+        Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))
         
         if ply.karma < 500 and not ply.bot then
             ply:kick("Your karma went too low. Please read the rules!")

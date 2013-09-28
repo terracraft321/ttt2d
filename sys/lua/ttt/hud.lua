@@ -103,6 +103,7 @@ end
 
 function Hud.clear_traitor_marks(ply)
     if ply.bot then return end
+    if not ply.hud then return end
     if ply.hud.traitors then
         for k,v in pairs(ply.hud.traitors) do
             v:remove()

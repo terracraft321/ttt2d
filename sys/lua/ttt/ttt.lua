@@ -116,7 +116,7 @@ function TTT.round_end(winner)
     local players = Player.table
     for _,ply in pairs(players) do
         if ply.killer then
-            ply:msg(Color.white .. "You were killed by " .. killer.name .. "@C")
+            ply:msg(Color.white .. "You were killed by " .. ply.killer.name .. "@C")
             ply.killer = nil
         end
     end

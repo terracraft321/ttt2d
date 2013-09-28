@@ -54,6 +54,8 @@ time = 0
 TTT.round_timer = nil
 TTT.mia = {}
 TTT.traitors = {}
+TTT.badges = {}
+TTT.badges[4917] = "dev"
 
 function TTT.round_begin()
     print('round begin')
@@ -66,18 +68,20 @@ function TTT.round_begin()
     
     local players = Player.table 
     
-    lock_team = false
+    
     for _,ply in pairs(players) do
         local tilex,tiley = randomentity(1)
         local pos = {x=tilex*32+16,y=tiley*32+16}
         
+        lock_team = false
         ply.team = 1
         ply:spawn(pos.x, pos.y)
         ply:set_role(PREPARING)
+        lock_team = true
         
         Hud.draw_health(ply)
     end
-    lock_team = true
+    
     
     spawn_items()
     
@@ -253,6 +257,23 @@ function TTT.color_format(tbl)
     end
 end
 
+function TTT.draw_badge(ply)
+    if ply.badge then
+        ply.badge:remove()
+    end
+    if not ply.usgn then
+        return
+    end
+    if TTT.badges[ply.usgn] then
+        local path = 'gfx/ttt_dev/' .. TTT.badges[ply.usgn] .. '.png'
+        ply.badge = Image(path, 1, 0, ply.id+200)
+    end
+end
+
+Hook('radio', function()
+    return 1
+end)
+
 Hook('drop', function(ply, iid, weapon)
     if ply:is_traitor() then
         Timer(1, function()
@@ -311,6 +332,9 @@ Hook('leave', function(ply)
         TTT.mia[ply.id].img:remove()
         TTT.mia[ply.id] = nil
     end
+    if ply.badge then
+        ply.badge:remove()
+    end
     Karma.save_karma(ply)
     Hud.clear_traitor_marks(ply)
     Hud.clear(ply)
@@ -326,6 +350,7 @@ Hook('buy', function(ply)
 end)
 
 Hook('spawn', function(ply)
+    TTT.draw_badge(ply)
     return 'x'
 end)
 
@@ -345,10 +370,10 @@ Hook('die', function(ply)
         TTT.mia[ply.id] = nil
     end
     
-    --lock_team = false
+    lock_team = false
     ply:set_role(SPECTATOR)
     ply.team = 0
-    --lock_team = true
+    lock_team = true
     
     return 1
 end)

@@ -16,7 +16,7 @@ Game.mp_killinfo = 0
 Game.sv_friendlyfire = 1
 Game.mp_hud = 0
 Game.mp_radar = 0
-Game.sv_gamemode = 1
+Game.sv_gamemode = 2
 Game.sv_fow = 1
 Game.mp_mapvoteratio = 0
 Parse('mp_wpndmg', 'USP', 30)

@@ -111,8 +111,8 @@ function Hud.clear_traitor_marks(ply)
     end
 end
 
-function Hud.mark_detective()
-    local img = Image('gfx/shadow.bmp<a>', 2, 0, v.id + 100)
+function Hud.mark_detective(ply)
+    local img = Image('gfx/shadow.bmp<a>', 2, 0, ply.id + 100)
     img:scale(1.5, 1.5)
     img:color(60, 60, 220)
     table.insert(Hud.detectives, img)

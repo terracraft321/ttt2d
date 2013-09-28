@@ -114,7 +114,7 @@ function TTT.clear_mia_all()
 end
 
 function TTT.set_mia(ply)
-    ply:set_role(MIA)
+    
     
     if ply.weapon then
         Parse("spawnitem", ply.weapon, ply.tilex, ply.tiley)
@@ -132,6 +132,7 @@ function TTT.set_mia(ply)
         role = ply.role
     }
     
+    ply:set_role(MIA)
     
     TTT.mia[ply.id] = tbl
     
@@ -224,13 +225,16 @@ Hook('use', function(ply)
                 v.found = true
                 
                 local role = "INNOCENT"
+                local color = Color.innocent
                 if v.role == TRAITOR then
                     role = "TRAITOR"
+                    color = Color.traitor
                 elseif v.role == DETECTIVE then
                     role = "DETECTIVE"
+                    color = Color.detective
                 end
                 
-                msg(Color.innocent .. ply.name .. " found the body of " .. v.ply.name .. " who was " .. role .. "@C")
+                msg(Color.innocent .. ply.name .. " found the body of " .. v.ply.name .. " who was " .. color .. role .. "@C")
                 
                 lock_team = true
             else
@@ -328,7 +332,7 @@ Hook('second', function()
         if t_num == 0 then
             msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
             TTT.round_end()
-        elseif t_num == i_num then
+        elseif i_num == 0 then
             msg(Color(220,20,20).."Traitors won!@C")
             TTT.round_end()
         end

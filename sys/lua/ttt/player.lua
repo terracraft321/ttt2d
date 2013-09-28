@@ -11,6 +11,10 @@ function Player.mt:is_traitor()
     return self.role == TRAITOR
 end
 
+function Player.mt:is_mia()
+    return self.role == MIA
+end
+
 function Player.mt:remind(message)
     self:msg(Color(120,220,120) .. message .. '@C')
 end

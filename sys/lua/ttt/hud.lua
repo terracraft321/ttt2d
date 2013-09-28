@@ -138,3 +138,15 @@ function Hud.draw(ply)
     Hud.draw_role(ply)
     Hud.draw_health(ply)
 end
+
+function Hud.clear(ply)
+    if ply.hud.base then
+        ply.hud.base:remove()
+    end
+    if ply.hud.team then
+        ply.hud.team:remove()
+    end
+    if ply.hud.health then
+        ply.hud.health:remove()
+    end
+end

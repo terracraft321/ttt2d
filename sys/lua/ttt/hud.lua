@@ -43,6 +43,8 @@ end
 function Hud.draw_role(ply)
     if ply.bot then return end
     
+    if not ply.hud then return end
+    
     if ply.hud.team then
         ply.hud.team:remove()
     end

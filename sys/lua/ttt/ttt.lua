@@ -170,6 +170,7 @@ function set_teams()
         local ply = table.remove(players, rnd)
         ply:set_role(TRAITOR)
         ply:equip(32)
+        ply:equip(52)
         
         Timer(1, function()
             Hud.mark_traitors(ply)
@@ -180,6 +181,7 @@ function set_teams()
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
         ply:set_role(DETECTIVE)
+        ply:equip(41)
         
         Hud.mark_detective(ply)
     end

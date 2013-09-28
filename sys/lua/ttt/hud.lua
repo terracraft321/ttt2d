@@ -141,6 +141,9 @@ function Hud.draw(ply)
 end
 
 function Hud.clear(ply)
+    if not ply.hud then
+        return
+    end
     if ply.hud.base then
         ply.hud.base:remove()
     end

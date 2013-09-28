@@ -209,7 +209,7 @@ end
 
 function clear_items()
     local items = item(0,"table")
-    for _,id in pairs(items) do
+    for i,id in pairs(items) do
         Timer(i*50, function()
             Parse('removeitem', id)
         end)

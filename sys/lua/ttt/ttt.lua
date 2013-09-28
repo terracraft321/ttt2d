@@ -172,6 +172,7 @@ end)
 Hook('join', function(ply)
     ply.hud = {}
     ply:set_role(SPECTATOR)
+    Karma.reset(ply)
     Timer(1000, function()
         Hud.draw(ply)
     end)

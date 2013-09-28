@@ -46,6 +46,10 @@ function Karma.apply_karma(ply)
     ply.damagefactor = math.max(ply.damagefactor, 0.1)
 end
 
+function Karma.reset(ply)
+    ply.karma = 1000
+end
+
 function Karma.hurt(attacker, victim, dmg)
     if attacker == victim then return end
     

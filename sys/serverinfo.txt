@@ -11,6 +11,7 @@
 ©255255255Your score on scoreboard is your karma and it tells you how well you play. If you let your karma drop below 1000, you'll get punished e.g. your damage towards other players is reduced.
 
 ©150150150  Useful facts
+©255255255- Found a body? Press E on it!
 ©255255255- Traitor usually has a m4a1
 ©255255255- Voting costs you 100 karma
 ©255255255- DF means DamageFactor e.g. DF0.5 means you do only 50% damage

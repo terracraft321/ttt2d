@@ -33,8 +33,8 @@ MIA = 8
 
 -- config
 DEBUG = false
-WEAPON_1 = {30, 20, 10}
-WEAPON_2 = {2, 4, 69}
+WEAPON_1 = {30, 20, 10, 20, 20, 10, 23, 23, 35, 30, 39}
+WEAPON_2 = {2, 2, 2, 2, 4, 4, 3, 69}
 TIME_PREPARE = 15
 TIME_GAME = 180
 TIME_NEXTROUND = 5

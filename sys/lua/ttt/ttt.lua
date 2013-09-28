@@ -160,6 +160,10 @@ function clear_items()
     end
 end
 
+Hook('vote', function(ply)
+    Karma.give_penalty(ply, 100)
+end)
+
 Hook('buy', function(ply)
     ply:msg(Color.traitor .. "Buying is not allowed!@C")
     return 1

@@ -131,7 +131,8 @@ function TTT.set_mia(ply, weapon)
         img = img,
         found = false,
         role = ply.role,
-        weapon = weapon
+        weapon = weapon,
+        time = time
     }
     
     ply:set_role(MIA)
@@ -212,8 +213,9 @@ function clear_items()
     local items = item(0,"table")
     for i,id in pairs(items) do
         Timer(i*50, function()
-            print('remove ' .. id)
-            Parse('removeitem', id)
+            if item(id, "player") == 0 then
+                Parse('removeitem', id)
+            end
         end)
     end
 end
@@ -262,6 +264,7 @@ Hook('use', function(ply)
                 else
                     ply:msg(Color.detective .. "No weapon data@C")
                 end
+                ply:msg(Color.detective .. "Died " .. time-v.time .. " seconds ago@C")
             end
         end
     end

@@ -71,6 +71,7 @@ function Hud.draw_health(ply)
     if not ply.hud.health then
         ply.hud.health = Image('gfx/ttt_dev/health.png', Hud.x, Hud.y, 2, ply.id)
         ply.hud.health:color(20, 170, 50)
+        ply.hud.health:scale(0, 1)
     end
      
     local speed = 300

@@ -191,7 +191,7 @@ function spawn_items()
     local wpn_2 = math.max(math.floor(#players * 1.5), 10)
     
     for i=1,wpn_1 do
-        Timer(i*300, function()
+        Timer(i*50, function()
             local wep = WEAPON_1[math.random(#WEAPON_1)]
             local pos = Walk.random()
             Parse('spawnitem', wep, pos.x, pos.y)
@@ -199,7 +199,7 @@ function spawn_items()
     end
     
     for i=1,wpn_2 do
-        Timer(i*300, function()
+        Timer(i*50, function()
             local wep = WEAPON_2[math.random(#WEAPON_1)]
             local pos = Walk.random()
             Parse('spawnitem', wep, pos.x, pos.y)
@@ -210,7 +210,9 @@ end
 function clear_items()
     local items = item(0,"table")
     for _,id in pairs(items) do
-       Parse('removeitem', id)
+        Timer(i*50, function()
+            Parse('removeitem', id)
+        end)
     end
 end
 

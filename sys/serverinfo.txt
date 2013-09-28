@@ -16,6 +16,7 @@
 ©255255255- DF means DamageFactor e.g. DF0.5 means you do only 50% damage
 ©255255255- Penalty depends on victim's karma
 ©255255255- You gain 5 karma every round and 30 extra karma for a clean round
+©255255255- Traitors can use team chat
 
 ©120220120This gamemode is open source:
 »http://unrealsoftware.de/forum_posts.php?post=362137«

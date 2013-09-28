@@ -251,6 +251,14 @@ function TTT.color_format(tbl)
     end
 end
 
+Hook('drop', function(ply, iid, weapon)
+    if ply:is_traitor() then
+        Timer(1, function()
+            ply.weapon = 50
+        end)
+    end
+end)
+
 Hook('use', function(ply)
     local tilex = ply.tilex
     local tiley = ply.tiley

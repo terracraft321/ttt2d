@@ -249,7 +249,11 @@ Hook('use', function(ply)
             end
             
             if ply.role == DETECTIVE then
-                ply:msg(Color.detective .. "Killed with " .. item(v.weapon, 'name') .. "@C")
+                if item(v.weapon, 'name') then
+                    ply:msg(Color.detective .. "Killed with " .. item(v.weapon, 'name') .. "@C")
+                else
+                    ply:msg(Color.detective .. "No weapon data@C")
+                end
             end
         end
     end

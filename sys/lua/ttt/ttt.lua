@@ -191,15 +191,19 @@ function spawn_items()
     local wpn_2 = math.max(math.floor(#players * 1.5), 10)
     
     for i=1,wpn_1 do
-        local wep = WEAPON_1[math.random(#WEAPON_1)]
-        local pos = Walk.random()
-        Parse('spawnitem', wep, pos.x, pos.y)
+        Timer(i*300, function()
+            local wep = WEAPON_1[math.random(#WEAPON_1)]
+            local pos = Walk.random()
+            Parse('spawnitem', wep, pos.x, pos.y)
+        end)
     end
     
     for i=1,wpn_2 do
-        local wep = WEAPON_2[math.random(#WEAPON_1)]
-        local pos = Walk.random()
-        Parse('spawnitem', wep, pos.x, pos.y)
+        Timer(i*300, function()
+            local wep = WEAPON_2[math.random(#WEAPON_1)]
+            local pos = Walk.random()
+            Parse('spawnitem', wep, pos.x, pos.y)
+        end)
     end
 end
 

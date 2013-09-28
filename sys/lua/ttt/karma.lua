@@ -1,4 +1,5 @@
 Karma = {}
+Karma.max = 2000
 
 
 -- penalty calculations
@@ -12,7 +13,7 @@ end
 
 -- reward calculations
 function Karma.get_hurt_reward(dmg)
-    return 1500 * dmg * 0.0003
+    return Karma.max * dmg * 0.0003
 end
 
 function Karma.get_kill_reward()
@@ -28,11 +29,9 @@ end
 
 function Karma.give_reward(ply, value)
     if ply.karma > 1000 then
-        ply:msg("reward +" .. value)
-        value = value*math.exp((-0.69314718 / 125) * (1500-ply.karma))
-        ply:msg("reward after +" .. value)
+        value = value*math.exp((-0.69314718 / (Karma.max*0.25)) * (Karma.max-ply.karma))
     end
-    ply.karma = math.min(ply.karma+value, 1500)
+    ply.karma = math.min(ply.karma+value, Karma.max)
     --ply:msg("karma +" .. ply.karma)
 end
 
@@ -115,7 +114,7 @@ function Karma.round_end()
         
         Karma.give_reward(ply, 5 + (ply.karma_clean and 30 or 0))
         
-        if ply.karma < 450 and not ply.bot then
+        if ply.karma < 500 and not ply.bot then
             ply:kick("Your karma went too low. Please read the rules!")
         end
         ply.score = ply.karma

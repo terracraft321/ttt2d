@@ -319,10 +319,18 @@ Hook('join', function(ply)
     end)
 end)
 
-Hook('die', function()
-    if not lock_team then
-        return 1
+Hook('die', function(ply)
+    if TTT.mia[ply.id] then
+        TTT.mia[ply.id].img:remove()
+        TTT.mia[ply.id] = nil
     end
+    
+    lock_team = false
+    ply:set_role(SPECTATOR)
+    ply.team = 0
+    lock_team = true
+    
+    return 1
 end)
 
 Hook('team', function(ply, team)

@@ -21,3 +21,11 @@
 
 ©120220120This gamemode is open source:
 »http://unrealsoftware.de/forum_posts.php?post=362137«
+
+©150150150  TODO
+©255255255- Traitor/detective shop
+©255255255- Moar maps!
+©255255255- Point system with hats :3
+©255255255- Ranking??
+©255255255- Balancing
+©255255255- Bot AI

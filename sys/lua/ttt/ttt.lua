@@ -113,7 +113,7 @@ function TTT.clear_mia_all()
     TTT.mia = {}
 end
 
-function TTT.set_mia(ply)
+function TTT.set_mia(ply, weapon)
     
     
     if ply.weapon then
@@ -129,7 +129,8 @@ function TTT.set_mia(ply)
         tiley = ply.tiley,
         img = img,
         found = false,
-        role = ply.role
+        role = ply.role,
+        weapon = weapon
     }
     
     ply:set_role(MIA)
@@ -246,6 +247,10 @@ Hook('use', function(ply)
                 local role = get_mia_role(v)
                 ply:msg(Color.innocent .. "This body belongs to " .. v.ply.name .. " who was " .. role .. "@C")
             end
+            
+            if ply.role == DETECTIVE then
+                ply:msg(Color.detective .. "Killed with " .. item(v.weapon, 'name') .. "@C")
+            end
         end
     end
 end)
@@ -310,7 +315,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     else
         Karma.killed(attacker, ply)
         
-        TTT.set_mia(ply)
+        TTT.set_mia(ply, weapon)
     end
     
     Hud.draw_health(ply)

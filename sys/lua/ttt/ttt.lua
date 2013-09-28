@@ -220,17 +220,21 @@ function clear_items()
     end
 end
 
-function get_mia_role(mia)
-    local role = "INNOCENT"
+function get_mia_color(mia)
     local color = Color.innocent
     if mia.role == TRAITOR then
-        role = "TRAITOR"
         color = Color.traitor
     elseif mia.role == DETECTIVE then
-        role = "DETECTIVE"
         color = Color.detective
     end
-    return color..role
+    return color
+end
+
+function TTT.color_format(tbl)
+    local str = ''
+    for k,v in pairs(tbl) do
+        str = str .. v
+    end
 end
 
 Hook('use', function(ply)
@@ -248,14 +252,22 @@ Hook('use', function(ply)
                 v.ply.team = 0
                 v.found = true
                 
-                local role = get_mia_role(v)
+                local color = get_mia_color(v)
 
-                msg(Color.innocent .. ply.name .. " found the body of " .. v.ply.name .. " who was " .. role .. "@C")
+                msg(table.concat({
+                    Color.innocent, ply.name,
+                    Color.white, " found the body of ",
+                    color, v.ply.name, "!@C"}))
+                --msg(Color.innocent .. ply.name .. " found the body of " .. v.ply.name .. " who was " .. role .. "@C")
                 
                 lock_team = true
             else
-                local role = get_mia_role(v)
-                ply:msg(Color.innocent .. "This body belongs to " .. v.ply.name .. " who was " .. role .. "@C")
+                local color = get_mia_color(v)
+                
+                ply:msg(table.concat({
+                    Color.white, "This body belongs to ",
+                    color, v.ply.name, "!@C"}))
+                --ply:msg(Color.innocent .. "This body belongs to " .. v.ply.name .. " who was " .. role .. "@C")
             end
             
             if ply.role == DETECTIVE then

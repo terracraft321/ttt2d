@@ -119,7 +119,7 @@ end
 function Hud.mark_detective(ply)
     local img = Image('gfx/shadow.bmp<a>', 2, 0, ply.id + 100)
     img:scale(1.8, 1.8)
-    img:color(60, 60, 220)
+    img:color(50, 80, 250)
     table.insert(Hud.detectives, img)
 end
 
@@ -127,6 +127,7 @@ function Hud.clear_detective_marks()
     for _,v in pairs(Hud.detectives) do
         v:remove()
     end
+    Hud.detectives = {}
 end
 
 function Hud.clear_marks()

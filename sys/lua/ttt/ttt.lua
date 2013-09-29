@@ -4,7 +4,7 @@ lapi.load('plugins/walk.lua')
 dofile('sys/lua/ttt/hud.lua')
 dofile('sys/lua/ttt/player.lua')
 dofile('sys/lua/ttt/karma.lua')
-
+dofile('sys/lua/ttt/mia.lua')
 
 Walk.scan()
 
@@ -41,7 +41,7 @@ TIME_NEXTROUND = 5
 
 Color.innocent = Color(20, 220, 20)
 Color.traitor = Color(220, 20, 20)
-Color.detective = Color(20, 20, 220)
+Color.detective = Color(50, 80, 250)
 Color.spectator = Color(220, 220, 20)
 Color.white = Color(220, 220, 220)
 
@@ -52,36 +52,28 @@ state = WAITING
 lock_team = true
 time = 0
 TTT.round_timer = nil
-TTT.mia = {}
 TTT.traitors = {}
-TTT.badges = {}
-TTT.badges[4917] = "dev"
 
 function TTT.round_begin()
-    print('round begin')
+    print("round_begin")
     state = PREPARING
     
     Karma.round_begin()
     clear_items()
-    TTT.clear_mia_all()
+    Mia.clear_all()
     Hud.clear_marks()
     
     local players = Player.table 
-    
-    
     for _,ply in pairs(players) do
         local tilex,tiley = randomentity(1)
         local pos = {x=tilex*32+16,y=tiley*32+16}
         
-        lock_team = false
-        ply.team = 1
-        ply:spawn(pos.x, pos.y)
         ply:set_role(PREPARING)
-        lock_team = true
+        ply:set_team(1)
+        ply:spawn(pos.x, pos.y)
         
         Hud.draw_health(ply)
     end
-    
     
     spawn_items()
     
@@ -93,7 +85,6 @@ function TTT.round_begin()
         Hud.set_timer(TIME_GAME)
         
         TTT.round_timer = Timer(TIME_GAME*1000, function()
-            --msg(Color(220, 20, 20).."Traitors lost!@C")
             msg(table.concat({
                     Color.white, "Time ran out! ",
                     Color.traitor, "Traitors ",
@@ -103,24 +94,21 @@ function TTT.round_begin()
     end)
 end
 
-function TTT.round_end(winner)
-    if TTT.round_timer then
-        TTT.round_timer:remove()
-    end
-    
+function TTT.tell_traitors()
     msg(Color.white .. "Traitors were:")
     for _,str in pairs(TTT.traitors) do
         msg(Color.traitor .. str)
     end
-    
-    local players = Player.table
-    for _,ply in pairs(players) do
-        if ply.killer then
-            ply:msg(Color.white .. "You were killed by " .. ply.killer.name .. "@C")
-            ply.killer = nil
-        end
+end
+
+function TTT.round_end(winner)
+    print("round_end")
+    if TTT.round_timer then
+        TTT.round_timer:remove()
     end
-    TTT.traitors = {}
+    
+    TTT.tell_traitors()
+    Mia.tell_killers()
     Karma.round_end(winner)
        
     state = PREPARING
@@ -129,83 +117,24 @@ function TTT.round_end(winner)
     end)
 end
 
-function TTT.clear_mia_all()
-    for _,v in pairs(TTT.mia) do
-        v.img:remove()
-    end
-    TTT.mia = {}
-end
-
-function TTT.set_mia(ply, weapon)
-    
-    
-    if ply.weapon then
-        Parse("spawnitem", ply.weapon, ply.tilex, ply.tiley)
-    end
-    
-    local img = Image('gfx/ttt_dev/body.png', ply.x, ply.y, 0)
-    img:pos(ply.x, ply.y, ply.rot-180)
-    img:alpha(0)
-    img:t_alpha(1000, 0.5)
-    
-    local tbl = {
-        ply = ply,
-        tilex = ply.tilex,
-        tiley = ply.tiley,
-        img = img,
-        found = false,
-        role = ply.role,
-        weapon = weapon,
-        time = time
-    }
-    
-    ply:set_role(MIA)
-    
-    TTT.mia[ply.id] = tbl
-    
-    local tilex, tiley = randomentity(2)
-
-    ply.tilex = tilex
-    ply.tiley = tiley
-    ply.health = 100
-    ply.weapons = {}
-    
-    ply:remind("You are currently Missing-in-Action (MIA)")
-    Timer(2000, function()
-        ply:remind("Yes, pratically you are dead but innocent don't know that")
-    end)
-    Timer(4000, function()
-        ply:remind("You just have to wait for someone to find your body")
-    end)
-end
-
 function set_teams()
     local players = Player.tableliving
     local t_num = math.ceil(#players / 5)
     local d_num = math.floor(#players / 9)
     
-    lock_team = false
+    TTT.traitors = {}
     for i=1,t_num do  -- select traitors
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
-        ply:set_role(TRAITOR)
-        ply:equip(32)
-        ply:equip(1)
         
-        table.insert(TTT.traitors, ply.name)
-        
-        Timer(1, function()
-            Hud.mark_traitors(ply)
-        end)
+        ply:make_traitor()
     end
     
     for i=1,d_num do  -- select detectives
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
-        ply:set_role(DETECTIVE)
-        ply:equip(41)
         
-        Hud.mark_detective(ply)
+        ply:make_detective()
     end
     
     for _,ply in pairs(players) do  -- select innocents
@@ -248,14 +177,14 @@ function clear_items()
     end
 end
 
-function get_mia_color(mia)
-    local color = Color.innocent
-    if mia.role == TRAITOR then
-        color = Color.traitor
-    elseif mia.role == DETECTIVE then
-        color = Color.detective
+function TTT.get_color(role)
+    if role == TRAITOR then
+        return Color.traitor
+    elseif role == DETECTIVE then
+        return Color.detective
+    else
+        return Color.innocent
     end
-    return color
 end
 
 function TTT.color_format(tbl)
@@ -265,85 +194,28 @@ function TTT.color_format(tbl)
     end
 end
 
-function TTT.draw_badge(ply)
-    if ply.badge then
-        ply.badge:remove()
-    end
-    if not ply.usgn then
-        return
-    end
-    if TTT.badges[ply.usgn] then
-        local path = 'gfx/ttt_dev/' .. TTT.badges[ply.usgn] .. '.png'
-        ply.badge = Image(path, 1, 0, ply.id+200)
-    end
-end
-
 Hook('radio', function()
     return 1
 end)
 
 Hook('drop', function(ply, iid, weapon)
-    if ply:is_traitor() then
-        Timer(1, function()
-            ply.weapon = 50
-        end)
-    end
+    Timer(1, function()
+        ply.weapon = 50
+    end)
 end)
 
 Hook('use', function(ply)
     local tilex = ply.tilex
     local tiley = ply.tiley
+    local players = Player.table
     
-    for _,v in pairs(TTT.mia) do
-        local dist = math.abs(tilex-v.tilex) + math.abs(tiley-v.tiley)
-        if dist < 2 then
-            
-            if not v.found then
-                lock_team = false
-                
-                v.found = true
-                v.img:t_alpha(1000, 1)
-                v.ply:set_role(SPECTATOR)
-                v.ply.team = 0
-                
-                
-                local color = get_mia_color(v)
-
-                msg(table.concat({
-                    Color.innocent, ply.name,
-                    Color.white, " found the body of ",
-                    color, v.ply.name, "@C"}))
-                
-                lock_team = true
-            else
-                local color = get_mia_color(v)
-                
-                ply:msg(table.concat({
-                    Color.white, "This body belongs to ",
-                    color, v.ply.name, "!@C"}))
-            end
-            
-            if ply.role == DETECTIVE then
-                if item(v.weapon, 'name') then
-                    ply:msg(Color.detective .. "Killed with " .. item(v.weapon, 'name') .. "@C")
-                else
-                    ply:msg(Color.detective .. "No weapon data@C")
-                end
-                ply:msg(Color.detective .. "Died " .. time-v.time .. " seconds ago@C")
-            end
-        end
+    for _,v in pairs(players) do
+        ply:use_body(v)
     end
 end)
 
 Hook('leave', function(ply)
-    if TTT.mia[ply.id] then
-        TTT.mia[ply.id].img:remove()
-        TTT.mia[ply.id] = nil
-    end
-    if ply.badge then
-        ply.badge:remove()
-    end
-    ply.killer = nil
+    ply:reset_mia()
     Karma.save_karma(ply)
     Hud.clear_traitor_marks(ply)
     Hud.clear(ply)
@@ -359,7 +231,6 @@ Hook('buy', function(ply)
 end)
 
 Hook('spawn', function(ply)
-    TTT.draw_badge(ply)
     return 'x'
 end)
 
@@ -374,16 +245,7 @@ Hook('join', function(ply)
 end)
 
 Hook('die', function(ply)
-    if TTT.mia[ply.id] and not TTT.mia[ply.id].found then
-        TTT.mia[ply.id].img:remove()
-        TTT.mia[ply.id] = nil
-    end
-    
-    lock_team = false
-    ply:set_role(SPECTATOR)
-    ply.team = 0
-    lock_team = true
-    
+    ply:make_spectator()
     return 1
 end)
 
@@ -407,8 +269,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
         
     else
         Karma.killed(attacker, ply)
-        ply.killer = attacker
-        TTT.set_mia(ply, weapon)
+        ply:make_mia(attacker)
     end
     
     Hud.draw_health(ply)
@@ -448,6 +309,7 @@ Hook('second', function()
             TTT.round_end(TRAITOR)
         end
     elseif state == WAITING then
+        print("waiting")
         local players = Player.table
         if #players > 1 then
             state = PREPARING

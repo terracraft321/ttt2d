@@ -31,7 +31,7 @@ function Player.mt:use_body(ply)
     local color = TTT.get_color(mia.role)
     
     if mia.found then    
-        ply:msg(table.concat({
+        self:msg(table.concat({
                 Color.white, "This body belongs to ",
                 color, ply.name}))
                 

@@ -134,7 +134,7 @@ function TTT.select_teams()
     local d_num = math.floor(#players / 10)
     
     TTT.traitors = {}
-    Player(1):make_traitor()
+    --Player(1):make_traitor()
     for i=1,t_num do  -- select traitors
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)

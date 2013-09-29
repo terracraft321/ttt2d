@@ -265,7 +265,7 @@ end)
 
 Hook('die', function(ply)
     ply:make_spectator()
-    Hud.draw_role(ply)
+    Hud.update_health(ply)
     return 1
 end)
 

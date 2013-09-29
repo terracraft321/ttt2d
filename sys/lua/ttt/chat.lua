@@ -11,6 +11,12 @@ function Chat.command(ply, message)
         elseif message == "!debug" then
             TTT.debug.state = not TTT.debug.state
             return true
+        elseif string.starts(message, "!reset") then
+            local id = tonumber(message:sub(8))
+            local t = Player(id)
+            t.karma = 1000
+            t.score = 1000
+            return true
         end        
     end
 end

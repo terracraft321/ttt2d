@@ -37,7 +37,7 @@ DEBUG = false
 WEAPON_1 = {30, 20, 10}
 WEAPON_2 = {2, 4, 69}
 TIME_PREPARE = 15
-TIME_GAME = 20
+TIME_GAME = 180
 TIME_NEXTROUND = 5
 
 Color.innocent = Color(20, 220, 20)

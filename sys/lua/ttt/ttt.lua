@@ -241,10 +241,12 @@ Hook('spawn', function(ply)
 end)
 
 Hook('join', function(ply)
-    Hud.draw(ply)
     ply:set_role(ROLE_SPECTATOR)
     Karma.reset(ply)
     Karma.load_karma(ply)
+    Timer(1000, function()
+        Hud.draw(ply)
+    end)
 end)
 
 Hook('die', function(ply)

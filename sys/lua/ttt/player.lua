@@ -67,7 +67,9 @@ end
 
 function Player.mt:set_role(role)
     self.role = role
-    Hud.draw_role(self)
+    if self.hud then
+        Hud.draw_role(self)
+    end
 end
 
 function Player.mt:get_role()

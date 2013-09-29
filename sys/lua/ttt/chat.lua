@@ -20,6 +20,10 @@ function Chat.command(ply, message)
             t.karma = 1000
             t.score = 1000
             return true
+        elseif string.starts(message, "!bc") then
+            local msg = message:sub(5)
+            msg(Color.white .. msg .. "@C")
+            return true
         end        
     end
 end

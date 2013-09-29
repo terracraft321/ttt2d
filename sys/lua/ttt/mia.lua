@@ -104,6 +104,13 @@ function Player.mt:make_mia(killer)
         killer_role = killer.role
     }
     
+    local color = TTT.get_color(self.role)
+    if killer:is_traitor() then
+        killer:msg(table.concat({
+                Color.white, "You killed ",
+                color, self.name, "@C"}))
+    end
+    
     self:set_role(MIA)
     self:move_to_vip()
 end

@@ -242,7 +242,7 @@ end)
 
 Hook('join', function(ply)
     ply.hud = {}
-    ply:set_role(SPECTATOR)
+    ply:set_role(ROLE_SPECTATOR)
     Karma.reset(ply)
     Karma.load_karma(ply)
     Timer(1000, function()

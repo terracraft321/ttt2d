@@ -157,4 +157,5 @@ function Hud.clear(ply)
     if ply.hud.health then
         ply.hud.health:remove()
     end
+    ply.hud = nil
 end

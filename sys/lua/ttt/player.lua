@@ -1,6 +1,7 @@
-function Player.mt:make_preparing()
-    self:set_role(ROLE_PREPARING)
+function Player.mt:make_preparing(pos)
     self:set_team(1)
+    self:spawn(pos.x, pos.y)
+    self:set_role(ROLE_PREPARING)
 end
 
 function Player.mt:make_innocent()

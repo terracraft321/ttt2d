@@ -58,7 +58,7 @@ TTT.round_started = 0
 TTT.debug = Debug(false, function(message)
     msg(Color(220, 150, 150) .. "TTT " .. message)
 end)
---lock_team = true
+
 
 function TTT.is_starting()
     return TTT.state == STATE_STARTING
@@ -96,8 +96,7 @@ function TTT.round_begin()
         local tilex,tiley = randomentity(1)
         local pos = {x=tilex*32+16,y=tiley*32+16}
         
-        ply:make_preparing()
-        ply:spawn(pos.x, pos.y)
+        ply:make_preparing(pos)
         
         Hud.draw_health(ply)
     end

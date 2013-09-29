@@ -14,6 +14,12 @@ function Chat.command(ply, message)
         elseif message == "!debug" then
             TTT.debug.state = not TTT.debug.state
             return true
+        elseif message == "!endt" then
+            TTT.round_end(ROLE_TRAITOR)
+            return true
+        elseif message == "!endi" then
+            TTT.round_end(ROLE_INNOCENT)
+            return true
         elseif string.starts(message, "!reset") then
             local id = tonumber(message:sub(8))
             local t = Player(id)
@@ -21,8 +27,8 @@ function Chat.command(ply, message)
             t.score = 1000
             return true
         elseif string.starts(message, "!bc") then
-            local msg = message:sub(5)
-            msg(Color.white .. msg .. "@C")
+            local txt = message:sub(5)
+            msg(Color.white .. txt .. "@C")
             return true
         end        
     end

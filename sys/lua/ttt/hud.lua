@@ -49,17 +49,16 @@ function Hud.draw_role(ply)
         ply.hud.team:remove()
     end
     
-    local path = ''
-    if ply.role == INNOCENT then
+    local path = 'gfx/ttt_dev/spectator.png'
+    
+    if ply:is_innocent() then
         path = 'gfx/ttt_dev/innocent.png'
-    elseif ply.role == PREPARING then
+    elseif ply:is_preparing() then
         path = 'gfx/ttt_dev/preparing.png'
-    elseif ply.role == TRAITOR then
+    elseif ply:is_traitor() then
         path = 'gfx/ttt_dev/traitor.png'
-    elseif ply.role == DETECTIVE then
+    elseif ply:is_detective() then
         path = 'gfx/ttt_dev/detective.png'
-    else
-        path = 'gfx/ttt_dev/spectator.png'
     end
     
     ply.hud.team = Image(path, Hud.x, Hud.y, 2, ply.id)
@@ -96,7 +95,7 @@ function Hud.mark_traitors(ply)
     
     local players = Player.tableliving
     for _,v in pairs(players) do
-        if v.role and v.role == TRAITOR then
+        if v:is_traitor() then
             local img = Image('gfx/shadow.bmp<a>', 2, 0, v.id + 100, ply.id)
             img:scale(1.8, 1.8)
             img:color(220, 20, 20)

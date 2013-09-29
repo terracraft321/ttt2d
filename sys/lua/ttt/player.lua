@@ -1,10 +1,14 @@
-function Player.mt:make_spectator()
-    self:set_role(SPECTATOR)
-    self:set_team(0)
+function Player.mt:make_preparing()
+    self:set_role(ROLE_PREPARING)
+    self:set_team(1)
+end
+
+function Player.mt:make_innocent()
+    self:set_role(ROLE_INNOCENT)
 end
 
 function Player.mt:make_traitor()
-    self:set_role(TRAITOR)
+    self:set_role(ROLE_TRAITOR)
     self:equip(32)
     self:equip(1)
     
@@ -16,16 +20,47 @@ function Player.mt:make_traitor()
 end
 
 function Player.mt:make_detective()
-    self:set_role(DETECTIVE)
+    self:set_role(ROLE_DETECTIVE)
     self:equip(41)
     
     Hud.mark_detective(self)
 end
 
+function Player.mt:make_spectator()
+    self:set_role(ROLE_SPECTATOR)
+    self:set_team(0)
+end
+
+function Player.mt:is_preparing()
+    return self.role == ROLE_PREPARING
+end
+
+function Player.mt:is_innocent()
+    return self.role == ROLE_INNOCENT
+end
+
+function Player.mt:is_traitor()
+    return self.role == ROLE_TRAITOR
+end
+
+function Player.mt:is_detective()
+    return self.role == ROLE_DETECTIVE
+end
+
+function Player.mt:is_mia()
+    return self.role == ROLE_MIA
+end
+
+function Player.mt:is_spectator()
+    return self.role == ROLE_SPECTATOR
+end
+
 function Player.mt:set_team(value)
-    lock_team = false
+    --lock_team = false
+    self.allow_change = true
     self.team = value
-    lock_team = true
+    self.allow_change = false
+    --lock_team = true
 end
 
 function Player.mt:set_role(role)
@@ -35,14 +70,6 @@ end
 
 function Player.mt:get_role()
     return self.role
-end
-
-function Player.mt:is_traitor()
-    return self.role == TRAITOR
-end
-
-function Player.mt:is_mia()
-    return self.role == MIA
 end
 
 function Player.mt:remind(message)

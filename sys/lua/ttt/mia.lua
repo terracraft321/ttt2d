@@ -46,7 +46,7 @@ function Player.mt:use_body(ply)
                 color, ply.name, "@C"}))
     end
     
-    if self.role == DETECTIVE then
+    if self:is_detective() then
         self:msg(table.concat({
                 Color.detective,
                 "The body is ",
@@ -57,7 +57,12 @@ end
 
 function Player.mt:remove_body()
     if self.body then
-        self.body:remove()
+        local body = self.body
+        
+        body:t_alpha(2000, 0)
+        Timer(2000, function()
+            body:remove()
+        end)
     end
 end
 

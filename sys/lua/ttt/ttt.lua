@@ -55,6 +55,7 @@ TTT = {}
 TTT.state = STATE_WAITING
 TTT.traitors = {}
 TTT.round_started = 0
+TTT.round_count = 0
 TTT.debug = Debug(false, function(message)
     msg(Color(220, 150, 150) .. "TTT " .. message)
 end)
@@ -83,6 +84,8 @@ end
 
 function TTT.round_begin()
     TTT.debug("round begin")
+    
+    TTT.round_count = TTT.round_count + 1
     
     TTT.set_state(STATE_PREPARING)
     
@@ -117,6 +120,11 @@ function TTT.round_end(winner)
     Mia.tell_killers()
     Karma.round_end(winner)
     TTT.set_state(STATE_WAITING)
+    
+    if TTT.round_count >= 10 then
+        msg(Color.white .. "Map restart!@C")
+        Parse("map", Map.name)
+    end
 end
 
 function TTT.tell_traitors()

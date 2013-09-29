@@ -27,9 +27,9 @@ function Chat.traitor_message(ply, message)
     
     for _,recv in pairs(players) do
         if recv:is_traitor() then
-            recv:msg(TTT.format_chat(ply, message))
+            recv:msg(Chat.format(ply, message))
         else
-            recv:msg(TTT.format_chat(ply, message, ROLE_INNOCENT))
+            recv:msg(Chat.format(ply, message, ROLE_INNOCENT))
         end
     end
 end
@@ -39,7 +39,7 @@ function Chat.traitor_message_team(ply, message)
     
     for _,recv in pairs(players) do
         if recv:is_traitor() then
-            recv:msg("(TRAITORS) " .. TTT.format_chat(ply, message))
+            recv:msg("(TRAITORS) " .. Chat.format(ply, message))
         end
     end
 end
@@ -49,7 +49,7 @@ function Chat.spectator_message(ply, message)
 
     for _,recv in pairs(players) do
         if recv:is_spectator() or recv:is_traitor() or not TTT:is_running() then
-            recv:msg(TTT.format_chat(ply, message))
+            recv:msg(Chat.format(ply, message))
         end
     end
 end
@@ -66,7 +66,7 @@ Hook('say', function(ply, message)
         Chat.spectator_message(ply, message)
     
     else
-        msg(TTT.format_chat(ply, message))
+        msg(Chat.format(ply, message))
     end
 
     return 1

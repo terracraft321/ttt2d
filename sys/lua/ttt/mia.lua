@@ -19,6 +19,43 @@ function Mia.tell_killers()
     end
 end
 
+function Player.mt:scan_body(ply)
+    if not ply.mia then return false end
+    
+    local mia = ply.mia
+    local dist_x = math.abs(self.tilex - mia.tilex)
+    local dist_y = math.abs(self.tiley - mia.tiley)
+    
+    if dist_x+dist_y > 1 then return false end
+    
+    self.scanner = mia.killer
+    self:msg(table.concat({
+                Color.detective,
+                "You took a DNA sample from ",
+                ply.name}))
+    return true
+end
+
+function Player.mt:scan_player(ply)
+    if not self.scanner then
+        self:msg(Color.detective .. "No DNA sample set yet")
+        return 
+    end
+    
+    if self.scanner == ply then
+        self:msg(table.concat({
+                Color.detective, "The DNA sample ",
+                Color.traitor, "matches",
+                Color.detective, " with ",
+                ply.name}))
+    else
+        self:msg(table.concat({
+                Color.detective,
+                "The DNA sample doesn't match with ",
+                ply.name}))
+    end
+end
+
 function Player.mt:use_body(ply)
     if not ply.mia then return end
     
@@ -105,6 +142,7 @@ function Player.mt:make_mia(killer)
         tilex = self.tilex,
         tiley = self.tiley,
         time = os.time(),
+        killer = killer,
         killer_name = killer.name,
         killer_role = killer.role
     }

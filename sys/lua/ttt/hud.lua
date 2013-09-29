@@ -88,7 +88,7 @@ end
 function Hud.mark_traitors(ply) 
     if ply.bot then return end
     if ply.hud.traitors then
-        clear_traitors(ply) 
+        Hud.clear_traitor_marks(ply)
     end
     
     ply.hud.traitors = {}

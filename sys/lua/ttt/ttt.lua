@@ -262,10 +262,34 @@ Hook('team', function(ply, team)
     end
 end)
 
+Hook('walkover', function(ply, iid, wpn)
+    if wpn == 78 and not ply:is_detective() then
+        return 1
+    end
+end)
+
+Hook('attack', function(ply)
+    if not ply.weapon == 78 then return end
+    
+    local players = Player.table
+    
+    for _,v in pairs(players) do
+        if ply:scan_body(v) then
+            return
+        end
+    end
+end)
+
 Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     TTT.debug("hit " .. ply.name .. " state " .. TTT.state)
     if not TTT:is_running() then return 1 end
     if attacker:is_mia() then return 1 end
+    
+    if weapon == 78 then
+        TTT.debug("scan " .. attacker.name .. " " .. ply.name)
+        attacker:scan_player(ply)
+        return 1
+    end
     
     if type(attacker) ~= 'table' then return 0 end
     

@@ -54,7 +54,7 @@ function Chat.spectator_message(ply, message)
     local players = Player.table
 
     for _,recv in pairs(players) do
-        if recv:is_spectator() or recv:is_traitor() or not TTT:is_running() then
+        if recv:is_spectator() or recv:is_mia() or not TTT:is_running() then
             recv:msg(Chat.format(ply, message))
         end
     end

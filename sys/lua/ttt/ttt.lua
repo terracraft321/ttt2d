@@ -102,8 +102,8 @@ end
 
 function set_teams()
     local players = Player.tableliving
-    local t_num = math.ceil(#players / 5)
-    local d_num = math.floor(#players / 9)
+    local t_num = math.ceil(#players / 6)
+    local d_num = math.floor(#players / 10)
     
     TTT.traitors = {}
     for i=1,t_num do  -- select traitors

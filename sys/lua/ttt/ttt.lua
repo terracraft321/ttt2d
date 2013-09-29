@@ -30,13 +30,14 @@ SPECTATOR = 5
 RUNNING = 6
 WAITING = 7
 MIA = 8
+STARTING = 9
 
 -- config
 DEBUG = false
 WEAPON_1 = {30, 20, 10}
 WEAPON_2 = {2, 4, 69}
 TIME_PREPARE = 15
-TIME_GAME = 180
+TIME_GAME = 20
 TIME_NEXTROUND = 5
 
 Color.innocent = Color(20, 220, 20)
@@ -50,9 +51,8 @@ TTT = {}
 -- variables
 state = WAITING
 lock_team = true
-time = 0
-TTT.round_timer = nil
 TTT.traitors = {}
+TTT.round_started = 0
 
 function TTT.round_begin()
     print("round_begin")
@@ -77,21 +77,10 @@ function TTT.round_begin()
     
     spawn_items()
     
-    msg(Color.white .. "Go get your weapons!@C")
+    TTT.round_started = os.time()
     Hud.set_timer(TIME_PREPARE)
-    Timer(TIME_PREPARE*1000, function()
-        state = RUNNING
-        set_teams()
-        Hud.set_timer(TIME_GAME)
-        
-        TTT.round_timer = Timer(TIME_GAME*1000, function()
-            msg(table.concat({
-                    Color.white, "Time ran out! ",
-                    Color.traitor, "Traitors ",
-                    Color.white, "lost!@C"}))
-            TTT.round_end(INNOCENT)
-        end)
-    end)
+    
+    msg(Color.white .. "Go get your weapons!@C")
 end
 
 function TTT.tell_traitors()
@@ -103,18 +92,12 @@ end
 
 function TTT.round_end(winner)
     print("round_end")
-    if TTT.round_timer then
-        TTT.round_timer:remove()
-    end
     
     TTT.tell_traitors()
     Mia.tell_killers()
     Karma.round_end(winner)
        
-    state = PREPARING
-    Timer(2000, function()
-        state = WAITING
-    end)
+    state = WAITING
 end
 
 function set_teams()
@@ -278,10 +261,16 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
 end)
 
 Hook('second', function()
-    time = time + 1
+    local round_time = os.time() - TTT.round_started
     
-    
-    if state == RUNNING then
+    if state == PREPARING then
+        if round_time >= TIME_PREPARE then
+            state = RUNNING
+            set_teams()
+            Hud.set_timer(TIME_GAME-TIME_PREPARE)
+        end
+    elseif state == RUNNING then
+        
         local players = Player.tableliving
         local t_num = 0
         local i_num = 0
@@ -299,20 +288,29 @@ Hook('second', function()
                     Color.white, "All traitors are gone! ",
                     Color.innocent, "Innocent won!@C"}))
                     
-            --msg(Color(20,220,20).."All traitors are gone! Innocent won!@C")
             TTT.round_end(INNOCENT)
+            
         elseif i_num == 0 then
             msg(table.concat({
                     Color.traitor, "Traitors ",
                     Color.white, "won!@C"}))
-            --msg(Color(220,20,20).."Traitors won!@C")
+                    
             TTT.round_end(TRAITOR)
+        
+        elseif round_time >= TIME_GAME then
+            msg(table.concat({
+                    Color.white, "Time ran out! ",
+                    Color.traitor, "Traitors ",
+                    Color.white, "lost!@C"}))
+            
+            TTT.round_end(INNOCENT)
         end
+        
     elseif state == WAITING then
         print("waiting")
         local players = Player.table
         if #players > 1 then
-            state = PREPARING
+            state = STARTING
             msg(table.concat({
                     Color.white, "Next round in ",
                     Color.traitor, TIME_NEXTROUND,

@@ -270,6 +270,7 @@ end)
 
 Hook('attack', function(ply)
     if not ply.weapon == 78 then return end
+    if not ply:is_detective() then return end
     
     local players = Player.table
     
@@ -285,8 +286,8 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     if not TTT:is_running() then return 1 end
     if attacker:is_mia() then return 1 end
     
-    if weapon == 78 then
-        TTT.debug("scan " .. attacker.name .. " " .. ply.name)
+    if weapon == 78 and attacker:is_detective() then
+        TTT.debug("scanplayer " .. attacker.name .. " " .. ply.name)
         attacker:scan_player(ply)
         return 1
     end

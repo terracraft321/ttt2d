@@ -307,7 +307,6 @@ Hook('second', function()
         end
         
     elseif state == WAITING then
-        print("waiting")
         local players = Player.table
         if #players > 1 then
             state = STARTING

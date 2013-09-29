@@ -265,7 +265,7 @@ end)
 Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     TTT.debug("hit " .. ply.name .. " state " .. TTT.state)
     if not TTT:is_running() then return 1 end
-    if ply:is_mia() then return 1 end
+    if attacker:is_mia() then return 1 end
     
     if type(attacker) ~= 'table' then return 0 end
     

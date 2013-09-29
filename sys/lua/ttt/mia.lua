@@ -116,7 +116,7 @@ function Player.mt:make_mia(killer)
                 color, self.name, "@C"}))
     end
     
-    self:set_role(MIA)
+    self:set_role(ROLE_MIA)
     self:move_to_vip()
 end
 

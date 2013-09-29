@@ -98,7 +98,7 @@ function TTT.round_begin()
         
         ply:make_preparing(pos)
         
-        Hud.draw_health(ply)
+        Hud.update_health(ply)
     end
     
     TTT.spawn_items()
@@ -220,6 +220,7 @@ Hook('use', function(ply)
 end)
 
 Hook('leave', function(ply)
+    print("leave " .. ply.name)
     ply:reset_mia()
     Karma.save_karma(ply)
     Hud.clear_traitor_marks(ply)
@@ -240,17 +241,15 @@ Hook('spawn', function(ply)
 end)
 
 Hook('join', function(ply)
-    ply.hud = {}
+    Hud.draw(ply)
     ply:set_role(ROLE_SPECTATOR)
     Karma.reset(ply)
     Karma.load_karma(ply)
-    Timer(1000, function()
-        Hud.draw(ply)
-    end)
 end)
 
 Hook('die', function(ply)
     ply:make_spectator()
+    Hud.draw_role(ply)
     return 1
 end)
 

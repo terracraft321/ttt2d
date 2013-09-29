@@ -30,25 +30,38 @@ function Hud.draw_damagefactor(ply)
     Hudtxt(ply, 2):show(str, Hud.x+55, Hud.y-3, 0)
 end
 
-function Hud.draw_base(ply)
-    if ply.bot then return end
-    
+function Hud.clear_base(ply)
     if ply.hud.base then
         ply.hud.base:remove()
         ply.hud.base = nil
+    end
+end
+
+function Hud.clear_role(ply)
+    if ply.hud.role then
+        ply.hud.role:remove()
+        ply.hud.role = nil
+    end
+end
+
+function Hud.clear_health(ply)
+    if ply.hud.health then
+        ply.hud.health:remove()
+        ply.hud.health = nil
+    end
+end
+
+function Hud.draw_base(ply)    
+    if ply.hud.base then
+        Hud.clear_base(ply)
     end
     
     ply.hud.base = Image('gfx/ttt_dev/base.png', Hud.x, Hud.y, 2, ply.id)
 end
 
 function Hud.draw_role(ply)
-    if ply.bot then return end
-    
-    if not ply.hud then return end
-    
-    if ply.hud.team then
-        ply.hud.team:remove()
-        ply.hud.team = nil
+    if ply.hud.role then
+        Hud.clear_role(ply)
     end
     
     local path = 'gfx/ttt_dev/spectator.png'
@@ -63,20 +76,23 @@ function Hud.draw_role(ply)
         path = 'gfx/ttt_dev/detective.png'
     end
     
-    ply.hud.team = Image(path, Hud.x, Hud.y, 2, ply.id)
+    ply.hud.role = Image(path, Hud.x, Hud.y, 2, ply.id)
 end
 
 function Hud.draw_health(ply)
-    if ply.bot then return end
-    if not ply.hud then return end
-    
-    if not ply.hud.health then
-        ply.hud.health = Image('gfx/ttt_dev/health.png', Hud.x, Hud.y, 2, ply.id)
-        ply.hud.health:color(20, 170, 50)
-        ply.hud.health:scale(0, 1)
+    if ply.hud.health then
+        Hud.clear_health(ply)
     end
-     
-    local speed = 300
+    
+    ply.hud.health = Image('gfx/ttt_dev/health.png', Hud.x, Hud.y, 2, ply.id)
+    ply.hud.health:color(20, 170, 50)
+    ply.hud.health:scale(0, 1)
+end
+
+function Hud.update_health(ply)
+    if not ply.hud.health then return end
+
+    local speed = 350
     local scale = ply.health / ply.maxhealth
     local red = 100 * (1-scale) + 20
     local green = 120 * scale + 50
@@ -141,6 +157,12 @@ function Hud.clear_marks()
 end
 
 function Hud.draw(ply)
+    if ply.hud then
+        Hud.clear(ply.hud)
+    end
+    
+    ply.hud = {}
+    
     Hud.draw_base(ply)
     Hud.draw_role(ply)
     Hud.draw_health(ply)
@@ -150,14 +172,9 @@ function Hud.clear(ply)
     if not ply.hud then
         return
     end
-    if ply.hud.base then
-        ply.hud.base:remove()
-    end
-    if ply.hud.team then
-        ply.hud.team:remove()
-    end
-    if ply.hud.health then
-        ply.hud.health:remove()
-    end
+    Hud.clear_base(ply)
+    Hud.clear_role(ply)
+    Hud.clear_health(ply)
+
     ply.hud = nil
 end

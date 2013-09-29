@@ -178,6 +178,10 @@ function Karma.round_end(winner)
         
         if ply.karma < 500 and not ply.bot then
             ply:kick("Your karma went too low. Please read the rules!")
+            ply:reset_mia()
+            Karma.save_karma(ply)
+            Hud.clear_traitor_marks(ply)
+            Hud.clear(ply)
         end
         ply.score = ply.karma
     end

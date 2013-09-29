@@ -54,6 +54,12 @@ function Chat.command(ply, message)
             return true
         end        
     end
+    
+    if message == "!resethud" then
+        Hud.clear(ply)
+        Hud.draw(ply)
+        return true
+    end
 end
 
 function Chat.format(ply, message, role)

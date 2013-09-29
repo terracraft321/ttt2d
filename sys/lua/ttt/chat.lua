@@ -8,6 +8,9 @@ function Chat.command(ply, message)
         elseif message == "!italy" then
             Parse('map', 'ttt_italy')
             return true
+        elseif message == "!suspicion" then
+            Parse('map', 'ttt_suspicion')
+            return true
         elseif message == "!debug" then
             TTT.debug.state = not TTT.debug.state
             return true

@@ -26,6 +26,7 @@ function Chat.command(ply, message)
     if message == "!resethud" then
         Hud.clear(ply)
         Hud.draw(ply)
+        Hud.update_health(ply)
         return true
     end
     

@@ -43,7 +43,7 @@ local transform = {
 
 for k,v in pairs(transform) do  -- generate methods from transform table
     Image.mt[k] = function(self, ...)
-        _G[v](self.id, unpack(arg))
+        _G[v](self.id, unpack({...}))
     end
 end
 

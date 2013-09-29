@@ -1,5 +1,9 @@
 Chat = {}
 
+function Chat.literalize(str)
+    return str:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", function(c) return "%" .. c end)
+end
+
 function Chat.shortcut(message)
     local players = Player.table
     
@@ -9,7 +13,7 @@ function Chat.shortcut(message)
             
             for _,ply in pairs(players) do
                 if string.starts(ply.name:lower(), name) then
-                    message = message:gsub(word, ply.name)
+                    message = message:gsub(Chat.literalize(word), ply.name)
                 end
             end
         end

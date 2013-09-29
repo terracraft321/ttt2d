@@ -283,8 +283,7 @@ end)
 Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     TTT.debug("hit " .. ply.name .. " state " .. TTT.state)
     if not TTT:is_running() then return 1 end
-    if attacker:is_mia() then return 1 end
-    
+
     if weapon == 78 and attacker:is_detective() then
         TTT.debug("scanplayer " .. attacker.name .. " " .. ply.name)
         attacker:scan_player(ply)
@@ -292,6 +291,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     end
     
     if type(attacker) ~= 'table' then return 0 end
+    if attacker:is_mia() then return 1 end
     
     local newdmg = math.ceil(hpdmg * attacker.damagefactor)
     

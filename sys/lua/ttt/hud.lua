@@ -9,14 +9,6 @@ Hud.detectives = {}
 Hook('second', function()
     Hud.timer = math.max(Hud.timer-1, 0)
     Hud.draw_timer()
-    
-    local players = Player.table
-    
-    for _,ply in pairs(players) do
-        if ply.hud then
-            Hud.draw_health(ply)
-        end
-    end
 end)
 
 function Hud.set_timer(value)

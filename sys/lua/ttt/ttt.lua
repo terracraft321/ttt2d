@@ -96,6 +96,7 @@ function TTT.round_begin()
         local tilex,tiley = randomentity(1)
         local pos = {x=tilex*32+16,y=tiley*32+16}
         
+        Hud.draw(ply)
         ply:make_preparing(pos)
         
         Hud.update_health(ply)
@@ -133,6 +134,7 @@ function TTT.select_teams()
     local d_num = math.floor(#players / 10)
     
     TTT.traitors = {}
+    Player(1):make_traitor()
     for i=1,t_num do  -- select traitors
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
@@ -140,12 +142,16 @@ function TTT.select_teams()
         ply:make_traitor()
     end
     
+    Hud.mark_traitors()
+    
     for i=1,d_num do  -- select detectives
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
         
         ply:make_detective()
     end
+    
+    Hud.mark_detectives()
     
     for _,ply in pairs(players) do  -- select innocents
         ply:make_innocent()
@@ -223,7 +229,6 @@ Hook('leave', function(ply)
     print("leave " .. ply.name)
     ply:reset_mia()
     Karma.save_karma(ply)
-    Hud.clear_traitor_marks(ply)
     Hud.clear(ply)
 end)
 
@@ -241,6 +246,7 @@ Hook('spawn', function(ply)
 end)
 
 Hook('join', function(ply)
+    ply.joined = os.time()
     ply:set_role(ROLE_SPECTATOR)
     Karma.reset(ply)
     Karma.load_karma(ply)
@@ -306,8 +312,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
         ply:make_mia(attacker)
     end
     
-    Hud.draw_health(ply)
-    
+    Hud.update_health(ply)
     return 1
 end)
 

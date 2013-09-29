@@ -23,6 +23,12 @@ function Chat.shortcut(message)
 end
 
 function Chat.command(ply, message)
+    if message == "!resethud" then
+        Hud.clear(ply)
+        Hud.draw(ply)
+        return true
+    end
+    
     if ply.usgn == 4917 then
         if message == "!dust" then
             Parse('map', 'ttt_dust')
@@ -53,12 +59,6 @@ function Chat.command(ply, message)
             msg(Color.white .. txt .. "@C")
             return true
         end        
-    end
-    
-    if message == "!resethud" then
-        Hud.clear(ply)
-        Hud.draw(ply)
-        return true
     end
 end
 

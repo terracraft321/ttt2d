@@ -14,18 +14,12 @@ function Player.mt:make_traitor()
     self:equip(1)
     
     table.insert(TTT.traitors, self.name)
-    
-    Timer(1, function()
-        Hud.mark_traitors(self)
-    end)
 end
 
 function Player.mt:make_detective()
     self:set_role(ROLE_DETECTIVE)
     self:equip(41)
     self:equip(78)
-    
-    Hud.mark_detective(self)
 end
 
 function Player.mt:make_spectator()

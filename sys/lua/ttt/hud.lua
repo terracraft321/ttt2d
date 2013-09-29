@@ -103,44 +103,65 @@ function Hud.update_health(ply)
     ply.hud.health:t_color(speed, red, green, blue)
 end
 
-function Hud.mark_traitors(ply) 
-    if ply.bot then return end
-    if ply.hud.traitors then
-        Hud.clear_traitor_marks(ply)
+function Hud.mark_traitors()
+    local players = Player.table
+    
+    for _,ply in pairs(players) do
+        if ply:is_traitor() then  -- loop all traitors
+            if ply.hud.traitors then
+                Hud.clear_traitors_ply(ply)
+            end
+            ply.hud.traitors = {}
+            for __,fellow in pairs(players) do  
+                if fellow:is_traitor() then  -- find their fellas
+                    local img = Image('gfx/shadow.bmp<a>', 2, 0, fellow.id + 100, ply.id)
+                    img:scale(1.8, 1.8)
+                    img:color(220, 20, 20)
+                    table.insert(ply.hud.traitors, img)
+                end
+            end
+        end
+    end
+end
+
+function Hud.clear_traitors_ply(ply)
+    for _,img in pairs(ply.hud.traitors) do
+        img:remove()
+    end
+end
+
+function Hud.clear_traitors()
+    local players = Player.table
+    
+    for _,ply in pairs(players) do
+        if ply.hud then
+            if ply.hud.traitors then
+                Hud.clear_traitors_ply(ply)
+            end
+            ply.hud.traitors = nil
+        end
+    end
+end
+
+function Hud.mark_detectives()
+    if Hud.detectives then
+        Hud.clear_detectives()
     end
     
-    ply.hud.traitors = {}
+    Hud.detectives = {}
     
-    local players = Player.tableliving
-    for _,v in pairs(players) do
-        if v:is_traitor() then
-            local img = Image('gfx/shadow.bmp<a>', 2, 0, v.id + 100, ply.id)
+    local players = Player.table
+    for _,ply in pairs(players) do
+        if ply:is_detective() then
+            local img = Image('gfx/shadow.bmp<a>', 2, 0, ply.id + 100)
             img:scale(1.8, 1.8)
-            img:color(220, 20, 20)
-            table.insert(ply.hud.traitors, img)
+            img:color(50, 80, 250)
+            table.insert(Hud.detectives, img)
         end
     end
 end
 
-function Hud.clear_traitor_marks(ply)
-    if ply.bot then return end
-    if not ply.hud then return end
-    if ply.hud.traitors then
-        for k,v in pairs(ply.hud.traitors) do
-            v:remove()
-        end
-        ply.hud.traitors = nil
-    end
-end
-
-function Hud.mark_detective(ply)
-    local img = Image('gfx/shadow.bmp<a>', 2, 0, ply.id + 100)
-    img:scale(1.8, 1.8)
-    img:color(50, 80, 250)
-    table.insert(Hud.detectives, img)
-end
-
-function Hud.clear_detective_marks()
+function Hud.clear_detectives()
     for _,v in pairs(Hud.detectives) do
         v:remove()
     end
@@ -148,17 +169,13 @@ function Hud.clear_detective_marks()
 end
 
 function Hud.clear_marks()
-    Hud.clear_detective_marks()
-    
-    local players = Player.table
-    for _,ply in pairs(players) do
-        Hud.clear_traitor_marks(ply)
-    end
+    Hud.clear_detectives()
+    Hud.clear_traitors()
 end
 
 function Hud.draw(ply)
     if ply.hud then
-        Hud.clear(ply.hud)
+        return
     end
     
     ply.hud = {}

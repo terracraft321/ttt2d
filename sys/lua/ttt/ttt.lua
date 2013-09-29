@@ -96,6 +96,7 @@ function TTT.round_begin()
         local tilex,tiley = randomentity(1)
         local pos = {x=tilex*32+16,y=tiley*32+16}
         
+        Hud.clear(ply)
         ply:make_preparing()
         ply:spawn(pos.x, pos.y)
         

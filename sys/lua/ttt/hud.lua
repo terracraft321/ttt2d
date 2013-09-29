@@ -13,7 +13,9 @@ Hook('second', function()
     local players = Player.table
     
     for _,ply in pairs(players) do
-        Hud.draw_health(ply)
+        if ply.hud then
+            Hud.draw_health(ply)
+        end
     end
 end)
 

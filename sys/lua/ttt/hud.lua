@@ -35,6 +35,7 @@ function Hud.draw_base(ply)
     
     if ply.hud.base then
         ply.hud.base:remove()
+        ply.hud.base = nil
     end
     
     ply.hud.base = Image('gfx/ttt_dev/base.png', Hud.x, Hud.y, 2, ply.id)
@@ -47,6 +48,7 @@ function Hud.draw_role(ply)
     
     if ply.hud.team then
         ply.hud.team:remove()
+        ply.hud.team = nil
     end
     
     local path = 'gfx/ttt_dev/spectator.png'

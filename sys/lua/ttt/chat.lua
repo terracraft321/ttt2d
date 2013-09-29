@@ -1,5 +1,23 @@
 Chat = {}
 
+function Chat.shortcut(message)
+    local players = Player.table
+    
+    for word in string.gmatch(message, "%S+") do
+        if word:sub(1,1) == "@" and word:len() > 1 then
+            local name = word:sub(2):lower()
+            
+            for _,ply in pairs(players) do
+                if string.starts(ply.name:lower(), name) then
+                    message = message:gsub(word, ply.name)
+                end
+            end
+        end
+    end
+    
+    return message
+end
+
 function Chat.command(ply, message)
     if ply.usgn == 4917 then
         if message == "!dust" then
@@ -74,6 +92,7 @@ function Chat.spectator_message(ply, message)
 end
 
 Hook('say', function(ply, message)
+    message = Chat.shortcut(message)
 
     if Chat.command(ply, message) then
         return 1

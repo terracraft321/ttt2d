@@ -19,6 +19,7 @@
 ©255255255- You gain 5 karma every round and 30 extra karma for a clean round
 ©255255255- Traitors can use team chat
 ©255255255- Claws is a DNA scanner
+©255255255- Auto complete: @li translates to Livia
 
 ©120220120This gamemode is open source:
 »http://unrealsoftware.de/forum_posts.php?post=362137«

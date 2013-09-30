@@ -6,7 +6,7 @@ Hud.timer_txt = Hudtxt(0, 1)
 Hud.timer_color = Color(220, 220, 220)
 Hud.detectives = {}
 Hud.mias = {}
-Hud.debug = Debug(false, function(message)
+Hud.debug = Debug(true, function(message)
     TTT.debug(message)
 end)
 

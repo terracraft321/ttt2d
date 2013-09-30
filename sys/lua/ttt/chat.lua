@@ -28,6 +28,9 @@ function Chat.command(ply, message)
         Hud.draw(ply)
         Hud.update_health(ply)
         return true
+    elseif message == "!debughud" then
+        ply.debug_hud = true
+        return true
     end
     
     if ply.usgn == 4917 then

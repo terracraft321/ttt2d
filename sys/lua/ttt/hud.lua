@@ -6,7 +6,10 @@ Hud.timer_txt = Hudtxt(0, 1)
 Hud.timer_color = Color(220, 220, 220)
 Hud.detectives = {}
 Hud.mias = {}
-Hud.debug = Debug(true, function(message)
+Hud.debug = Debug(true, function(ply, message)
+    if ply.debug_hud then
+        ply:msg(message)
+    end
     TTT.debug(message)
 end)
 
@@ -37,7 +40,7 @@ end
 function Hud.clear_base(ply)
     if not ply.hud then return end
     if ply.hud.base then
-        Hud.debug(ply.id .. ' clear_base i' .. ply.hud.base.id)
+        Hud.debug(ply, ply.id .. ' clear_base i' .. ply.hud.base.id)
         ply.hud.base:remove()
         ply.hud.base = nil
     end
@@ -46,7 +49,7 @@ end
 function Hud.clear_role(ply)
     if not ply.hud then return end
     if ply.hud.role then
-        Hud.debug(ply.id .. ' clear_role i' .. ply.hud.role.id)
+        Hud.debug(ply, ply.id .. ' clear_role i' .. ply.hud.role.id)
         ply.hud.role:remove()
         ply.hud.role = nil
     end
@@ -55,7 +58,7 @@ end
 function Hud.clear_health(ply)
     if not ply.hud then return end
     if ply.hud.health then
-        Hud.debug(ply.id .. ' clear_health i' .. ply.hud.health.id)
+        Hud.debug(ply, ply.id .. ' clear_health i' .. ply.hud.health.id)
         ply.hud.health:remove()
         ply.hud.health = nil
     end
@@ -69,7 +72,7 @@ function Hud.draw_base(ply)
     
     ply.hud.base = Image('gfx/ttt_dev/base.png', Hud.x, Hud.y, 2, ply.id)
     
-    Hud.debug(ply.id .. ' draw_base i' .. ply.hud.base.id)
+    Hud.debug(ply, ply.id .. ' draw_base i' .. ply.hud.base.id)
 end
 
 function Hud.draw_role(ply)
@@ -94,7 +97,7 @@ function Hud.draw_role(ply)
     
     ply.hud.role = Image(path, Hud.x, Hud.y, 2, ply.id)
     
-    Hud.debug(ply.id .. ' draw_role i' .. ply.hud.role.id)
+    Hud.debug(ply, ply.id .. ' draw_role i' .. ply.hud.role.id)
 end
 
 function Hud.draw_health(ply)
@@ -107,7 +110,7 @@ function Hud.draw_health(ply)
     ply.hud.health:color(20, 170, 50)
     ply.hud.health:scale(0, 1)
     
-    Hud.debug(ply.id .. ' draw_health i' .. ply.hud.health.id)
+    Hud.debug(ply, ply.id .. ' draw_health i' .. ply.hud.health.id)
 end
 
 function Hud.update_health(ply)
@@ -124,7 +127,7 @@ function Hud.update_health(ply)
     ply.hud.health:t_move(speed, Hud.x-100 + scale*100, Hud.y)
     ply.hud.health:t_color(speed, red, green, blue)
     
-    Hud.debug(ply.id .. ' update_health i' .. ply.hud.health.id)
+    Hud.debug(ply, ply.id .. ' update_health i' .. ply.hud.health.id)
 end
 
 function Hud.mark_traitors()
@@ -201,7 +204,7 @@ function Hud.draw(ply)
     if ply.hud or ply.bot then
         return
     end
-    Hud.debug(ply.id .. ' draw')
+    Hud.debug(ply, ply.id .. ' draw')
     ply.hud = {}
     
     Hud.draw_base(ply)
@@ -213,7 +216,7 @@ function Hud.clear(ply)
     if not ply.hud or ply.bot then
         return
     end
-    Hud.debug(ply.id .. ' clear')
+    Hud.debug(ply, ply.id .. ' clear')
     Hud.clear_base(ply)
     Hud.clear_role(ply)
     Hud.clear_health(ply)

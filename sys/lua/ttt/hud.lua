@@ -141,7 +141,9 @@ function Hud.mark_traitors()
             ply.hud.traitors = {}
             for __,fellow in pairs(players) do  
                 if fellow:is_traitor() then  -- find their fellas
-                    ply:msg(Color.traitor .. fellow.name .. Color.white .. " is a fellow traitor.")
+                    if fellow ~= ply then
+                        ply:msg(Color.traitor .. fellow.name .. Color.white .. " is a fellow traitor.")
+                    end
                     local img = Image('gfx/shadow.bmp<a>', 2, 0, fellow.id + 100, ply.id)
                     img:scale(1.8, 1.8)
                     img:color(220, 20, 20)
@@ -181,6 +183,7 @@ function Hud.mark_detectives()
     local players = Player.table
     for _,ply in pairs(players) do
         if ply:is_detective() then
+            msg(Color.detective .. ply.name .. Color.white .. " is detective.")
             local img = Image('gfx/shadow.bmp<a>', 2, 0, ply.id + 100)
             img:scale(1.8, 1.8)
             img:color(50, 80, 250)

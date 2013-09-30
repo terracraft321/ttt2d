@@ -10,14 +10,6 @@ function Player.mt:make_innocent()
     self:set_role(ROLE_INNOCENT)
 end
 
-function Player.mt:make_traitor()
-    self:set_role(ROLE_TRAITOR)
-    self:equip(32)
-    self:equip(1)
-    
-    table.insert(TTT.traitors, self.name)
-end
-
 function Player.mt:make_detective()
     self:set_role(ROLE_DETECTIVE)
     self:equip(41)

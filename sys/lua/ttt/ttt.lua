@@ -2,16 +2,31 @@
 dofile('sys/lua/lapi/lapi.lua')
 lapi.load('plugins/walk.lua')
 
+-- global table
+TTT = {}
+
 -- load other files
 dofile('sys/lua/ttt/hud.lua')
 dofile('sys/lua/ttt/player.lua')
 dofile('sys/lua/ttt/karma.lua')
 dofile('sys/lua/ttt/mia.lua')
 dofile('sys/lua/ttt/chat.lua')
+dofile('sys/lua/ttt/traitor.lua')
 dofile('sys/lua/ttt/config.lua')
 
 -- scan the map for walkable tiles
 Walk.scan()
+
+-- current game state
+TTT.state = STATE_WAITING
+-- time when round has started
+TTT.round_started = os.time()
+-- current round number
+TTT.round_count = 0
+-- setup debugging
+TTT.debug = Debug(false, function(message)
+    msg(Color(220, 150, 150) .. "TTT " .. message)
+end)
 
 -- game settings
 Game.mp_autoteambalance = 0
@@ -25,22 +40,6 @@ Game.sv_gamemode = 2
 Game.sv_fow = 1
 Game.mp_mapvoteratio = 0
 Parse('mp_wpndmg', 'USP', 30)
-
--- global table
-TTT = {}
--- current game state
-TTT.state = STATE_WAITING
--- list of traitor names
-TTT.traitors = {}
--- time when round has started
-TTT.round_started = os.time()
--- current round number
-TTT.round_count = 0
--- setup debugging
-TTT.debug = Debug(false, function(message)
-    msg(Color(220, 150, 150) .. "TTT " .. message)
-end)
-
 
 -- is the game starting?
 function TTT.is_starting()
@@ -139,15 +138,6 @@ function TTT.preparing_end()
     
     -- select traitors and detectives
     TTT.select_teams()
-end
-
--- tell who were the traitors
-function TTT.tell_traitors()
-    msg(Color.white .. "Traitors were:")
-    
-    for _,str in pairs(TTT.traitors) do
-        msg(Color.traitor .. str)
-    end
 end
 
 -- select traitors and detectives
@@ -319,36 +309,9 @@ Hook('movetile', function(ply, x, y)
     if ply:is_mia() then
         Hud.update_mia(ply, x, y)
         return
-    elseif not ply:is_traitor() then
-        return
-    end
     
-    local itemlist = closeitems(ply.id, 1)
-    local found = false
-    for _,id in pairs(itemlist) do
-        if item(id,'x') == x and item(id,'y') == y then
-            found = true
-        end
-    end
-    
-    if not found then return end
-    
-    -- test version of traitors collecting more weapons
-    local weapons = ply.weapons
-    for _,item in pairs(weapons) do
-        if item == 32 and ply.weapon ~= 32 then
-            TTT.debug("re-equip " .. ply.id)
-            ply:strip(32)
-            Timer(1, function()
-                ply:equip(32)
-            end)
-        elseif item == 1 and ply.weapon ~= 1 then
-            TTT.debug("re-equip " .. ply.id)
-            ply:strip(1)
-            Timer(1, function()
-                ply:equip(1)
-            end)
-        end
+    elseif ply:is_traitor() then
+        ply:collect_more(x, y)
     end
 end)
 

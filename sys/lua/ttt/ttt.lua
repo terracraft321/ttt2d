@@ -39,7 +39,7 @@ Game.mp_radar = 0
 Game.sv_gamemode = 2
 Game.sv_fow = 1
 Game.mp_mapvoteratio = 0
-Parse('mp_wpndmg', 'USP', 30)
+Parse('mp_wpndmg', 'USP', 35)
 
 -- is the game starting?
 function TTT.is_starting()

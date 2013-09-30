@@ -160,7 +160,7 @@ function Player.mt:make_mia(killer)
     
     self:set_role(ROLE_MIA)
     self:move_to_vip()
-    self:equip(84)
+    Hud.mark_mia(self)
 end
 
 function Player.mt:reset_mia()

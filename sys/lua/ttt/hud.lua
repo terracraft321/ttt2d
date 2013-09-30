@@ -5,6 +5,7 @@ Hud.timer = 0
 Hud.timer_txt = Hudtxt(0, 1)
 Hud.timer_color = Color(220, 220, 220)
 Hud.detectives = {}
+Hud.mias = {}
 Hud.debug = Debug(false, function(message)
     TTT.debug(message)
 end)
@@ -189,9 +190,23 @@ function Hud.clear_detectives()
     Hud.detectives = {}
 end
 
+function Hud.mark_mia(ply)
+    local tile = math.random(Map.tilecount)
+    local img = Image('<tile:' .. tile .. '>', 2, 0, ply.id + 200)
+    table.insert(Hud.mias, img)
+end
+
+function Hud.clear_mias()
+    for _,v in pairs(Hud.mias) do
+        v:remove()
+    end
+    Hud.mias = {}
+end
+
 function Hud.clear_marks()
     Hud.clear_detectives()
     Hud.clear_traitors()
+    Hud.clear_mias()
 end
 
 function Hud.draw(ply)

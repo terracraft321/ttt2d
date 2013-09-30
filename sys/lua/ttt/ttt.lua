@@ -37,7 +37,7 @@ TTT.round_started = os.time()
 -- current round number
 TTT.round_count = 0
 -- setup debugging
-TTT.debug = Debug(true, function(message)
+TTT.debug = Debug(false, function(message)
     msg(Color(220, 150, 150) .. "TTT " .. message)
 end)
 

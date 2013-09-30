@@ -1,16 +1,10 @@
 local _image = image
 local _freeimage = freeimage
 
-function image(path, x, y, mode, pl)
-    if ply then
-        local i = _image(path, x, y, mode, pl)
-        print("create image " .. i)
-        return i
-    else
-        local i = _image(path, x, y, mode)
-        print("create image " .. i)
-        return i
-    end
+function image(path, x, y, mode, ...)
+    local i = _image(path, x, y, mode, unpack({...}))
+    print("create image " .. i)
+    return i
 end
 
 function freeimage(id)

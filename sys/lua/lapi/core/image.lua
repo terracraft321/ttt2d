@@ -4,13 +4,8 @@ Image = {}
 Image.mt = {}
 
 setmetatable(Image, {
-    __call = function(_, path, x, y, mode, pl)
-        local img = 0
-        if pl then
-            img = image(path, x, y, mode, pl)
-        else
-            img = image(path, x, y, mode)
-        end
+    __call = function(_, path, x, y, mode, ...)
+        local img = image(path, x, y, mode, unpack({...}))
         return setmetatable({id = img}, Image.mt)
     end,
     __index = function(_, key)

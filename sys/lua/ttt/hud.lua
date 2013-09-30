@@ -5,8 +5,8 @@ Hud.timer = 0
 Hud.timer_txt = Hudtxt(0, 1)
 Hud.timer_color = Color(220, 220, 220)
 Hud.detectives = {}
-Hud.debug = Debug(true, function(message)
-    msg(message)
+Hud.debug = Debug(false, function(message)
+    TTT.debug(message)
 end)
 
 Hook('second', function()

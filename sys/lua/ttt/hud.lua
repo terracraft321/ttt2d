@@ -88,6 +88,8 @@ function Hud.draw_role(ply)
         path = 'gfx/ttt_dev/traitor.png'
     elseif ply:is_detective() then
         path = 'gfx/ttt_dev/detective.png'
+    elseif ply:is_mia() then
+        path = 'gfx/ttt_dev/mia.png'
     end
     
     ply.hud.role = Image(path, Hud.x, Hud.y, 2, ply.id)
@@ -190,10 +192,20 @@ function Hud.clear_detectives()
     Hud.detectives = {}
 end
 
+function Hud.update_mia(ply, x, y)
+    if Hud.mias[ply.id] then
+        Hud.mias[ply.id]:pos(x*32, y*32, 0)
+    end
+end
+
 function Hud.mark_mia(ply)
+    if Hud.mias[ply.id] then
+        Hud.mias[ply.id]:remove()
+    end
+    
     local tile = math.random(Map.tilecount)
-    local img = Image('<tile:' .. tile .. '>', 2, 0, ply.id + 200)
-    table.insert(Hud.mias, img)
+    local img = Image('<tile:' .. tile .. '>', ply.tilex*32, ply.tiley*32, 1)
+    Hud.mias[ply.id] = img
 end
 
 function Hud.clear_mias()

@@ -316,7 +316,12 @@ end)
 
 -- movetile hook
 Hook('movetile', function(ply, x, y)
-    if not ply:is_traitor() then return end
+    if ply:is_mia() then
+        Hud.update_mia(ply, x, y)
+        return
+    elseif not ply:is_traitor() then
+        return
+    end
     
     local itemlist = closeitems(ply.id, 1)
     local found = false

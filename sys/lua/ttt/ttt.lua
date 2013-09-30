@@ -446,7 +446,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     end
     
     -- MIA's can't hit others
-    if attacker:is_mia() then return 1 end
+    if attacker:is_mia() or ply:is_mia() then return 1 end
     
     -- calculate new damage
     local newdmg = math.ceil(hpdmg * attacker.damagefactor)

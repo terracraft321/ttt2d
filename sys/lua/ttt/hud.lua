@@ -203,6 +203,8 @@ function Hud.mark_mia(ply)
         Hud.mias[ply.id]:remove()
     end
     
+    -- seed the random
+    math.randomseed(os.time())
     local tile = math.random(Map.tilecount)
     local img = Image('<tile:' .. tile .. '>', ply.tilex*32, ply.tiley*32, 1)
     Hud.mias[ply.id] = img

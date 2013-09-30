@@ -144,6 +144,9 @@ end
 function TTT.select_teams()
     TTT.debug("select teams")
     
+    -- seed the random
+    math.randomseed(os.time())
+    
     local players = Player.tableliving
     local t_num = math.ceil(#players / 6)
     local d_num = math.floor(#players / 10)

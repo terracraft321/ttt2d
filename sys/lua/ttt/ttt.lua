@@ -312,10 +312,40 @@ Hook('radio', function()
     return 1
 end)
 
+-- movetile hook
+Hook('movetile', function(ply, x, y)
+    if not ply:is_traitor() then return end
+    
+    local itemlist = closeitems(ply.id, 1)
+    local found = false
+    for _,id in pairs(itemlist) do
+        if item(id,'x') == x and item(id,'y') == y then
+            found = true
+        end
+    end
+    
+    if not found then return end
+    
+    -- test version of traitors collecting more weapons
+    local weapons = ply.weapons
+    for _,item in pairs(weapons) do
+        if item == 32 and ply.weapon ~= 32 then
+            ply:strip(32)
+            Timer(1, function()
+                ply:equip(32)
+            end)
+        elseif item == 1 and ply.weapon ~= 1 then
+            ply:strip(1)
+            Timer(1, function()
+                ply:equip(1)
+            end)
+        end
+    end
+end)
+
 -- drop hook
 Hook('drop', function(ply, iid, weapon)
     -- switch weapon to knife
-    -- TODO: is this even necessary?
     Timer(1, function()
         ply.weapon = 50
     end)

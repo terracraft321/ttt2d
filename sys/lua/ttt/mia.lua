@@ -98,6 +98,7 @@ function Player.mt:remove_body()
         
         body:t_alpha(2000, 0)
         Timer(2000, function()
+            Hud.debug(self, self.id .. ' remove_body i' .. body.id)
             body:remove()
         end)
     end

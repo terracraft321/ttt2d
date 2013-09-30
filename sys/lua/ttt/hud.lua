@@ -181,19 +181,18 @@ end
 
 function Hud.clear_traitors_ply(ply)
     for _,img in pairs(ply.hud.traitors) do
+        Hud.debug(ply, ply.id .. ' clear_traitors_ply i' .. img.id)
         img:remove()
     end
+    ply.hud.traitors = nil
 end
 
 function Hud.clear_traitors()
     local players = Player.table
     
     for _,ply in pairs(players) do
-        if ply.hud then
-            if ply.hud.traitors then
-                Hud.clear_traitors_ply(ply)
-            end
-            ply.hud.traitors = nil
+        if ply.hud and ply.hud.traitors then
+            Hud.clear_traitors_ply(ply)
         end
     end
 end
@@ -219,6 +218,7 @@ end
 
 function Hud.clear_detectives()
     for _,v in pairs(Hud.detectives) do
+        Hud.debug({}, ' clear_detectives i' .. v.id)
         v:remove()
     end
     Hud.detectives = {}

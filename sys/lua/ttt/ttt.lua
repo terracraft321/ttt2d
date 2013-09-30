@@ -432,7 +432,7 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
     end
     
     -- MIAs can hit eachother
-    if attacker:is_mia() or ply:is_mia() then return 0 end
+    if attacker:is_mia() or ply:is_mia() then return 1 end
     
     -- calculate new damage
     local newdmg = math.ceil(hpdmg * attacker.damagefactor)

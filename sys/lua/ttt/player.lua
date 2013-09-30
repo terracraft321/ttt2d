@@ -12,7 +12,7 @@ end
 
 function Player.mt:make_detective()
     self:set_role(ROLE_DETECTIVE)
-    self:equip(59)
+    self:equip(79)
     self:equip(78)
 end
 

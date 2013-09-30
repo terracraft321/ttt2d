@@ -5,7 +5,17 @@ Image.mt = {}
 
 setmetatable(Image, {
     __call = function(_, arg1, ...)
-        return Image(image(arg1, unpack({...})))
+        if type(arg1) == "number" then
+            return setmetatable({id = arg1}, Image.mt)
+        elseif type(arg1) == "table" then
+            local tbl = {}
+            for k,v in pairs(arg1) do
+                table.insert(tbl, Image(v))
+            end
+            return tbl
+        else
+            return Image(image(arg1, unpack({...})))
+        end
     end,
     __index = function(_, key)
         local m = rawget(Image, key)

@@ -205,7 +205,10 @@ function Hud.mark_mia(ply)
     
     -- seed the random
     math.randomseed(os.time())
+    TTT.debug("tilecount " .. Map.tilecount)
+    
     local tile = math.random(Map.tilecount)
+    TTT.debug("tile " .. tile)
     local img = Image('<tile:' .. tile .. '>', ply.tilex*32, ply.tiley*32, 1)
     Hud.mias[ply.id] = img
 end

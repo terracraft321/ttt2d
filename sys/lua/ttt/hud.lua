@@ -36,7 +36,7 @@ function Hud.check_errors()
         if ply.hud then
             for k,v in pairs(ply.hud) do
                 if v.id and Hud.collide(set, v.id) then
-                    msg("HUD IMAGE ERROR! " .. ply.name)
+                    print("HUD IMAGE ERROR! " .. ply.id)
                 end
             end
         end

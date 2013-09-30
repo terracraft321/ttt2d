@@ -63,8 +63,8 @@ setmetatable(Hook, {
                     return func(Player(killer), Player(victim), unpack({...}))
                 end
             elseif hook == 'hit' then
-                Hook[id] = function(ply, source, ...)
-                    return func(Player(ply), Player(source), unpack({...}))
+                Hook[id] = function(ply, source, weapon, ...)
+                    return func(Player(ply), Player(source), weapon, unpack({...}))
                 end
             elseif hook == 'hitzone' then
                 Hook[id] = function(img, ply, obj, ...)

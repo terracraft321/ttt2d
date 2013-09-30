@@ -332,13 +332,13 @@ Hook('movetile', function(ply, x, y)
         if item == 32 and ply.weapon ~= 32 then
             TTT.debug("re-equip " .. ply.id)
             ply:strip(32)
-            Timer(100, function()
+            Timer(1, function()
                 ply:equip(32)
             end)
         elseif item == 1 and ply.weapon ~= 1 then
             TTT.debug("re-equip " .. ply.id)
             ply:strip(1)
-            Timer(100, function()
+            Timer(1, function()
                 ply:equip(1)
             end)
         end

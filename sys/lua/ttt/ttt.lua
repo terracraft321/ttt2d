@@ -268,6 +268,11 @@ end)
 Hook('spawn', function(ply)
     TTT.debug("spawn i" .. ply.id)
     
+    -- mias are allowed to spawn
+    if ply:is_mia() then
+        return 'x'
+    end
+    
     -- if the game is already running, don't allow spawning
     if TTT.is_running() then -- don't allow spawning
         TTT.debug("spawn deny i" .. ply.id)
@@ -356,7 +361,10 @@ end)
 
 -- die hook
 Hook('die', function(ply)
-    if not ply:is_spectator() then
+    if ply:is_mia() then
+        ply:spawn(ply.x, ply.y)
+    elseif not ply:is_spectator() then
+        ply:make_mia()
         ply:make_spectator()
     end
     Hud.update_health(ply)

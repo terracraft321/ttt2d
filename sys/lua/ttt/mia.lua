@@ -115,8 +115,9 @@ end
 function Player.mt:move_to_vip()
     local tilex, tiley = randomentity(2)
 
-    self.tilex = tilex
-    self.tiley = tiley
+    self:spawn(tilex*32+16, tiley*32+16)
+    --self.tilex = tilex
+    --self.tiley = tiley
     self.health = 100
     self.weapons = {50}
     

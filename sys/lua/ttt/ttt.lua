@@ -151,6 +151,13 @@ function TTT.select_teams()
     local t_num = math.ceil(#players / 6)
     local d_num = math.floor(#players / 10)
     
+    -- remove mias from list
+    for k,ply in pairs(players) do
+        if ply:is_mia() then
+            table.remove(players, k)
+        end
+    end
+    
     -- select traitors
     TTT.traitors = {}
     for i=1,t_num do
@@ -361,12 +368,15 @@ end)
 
 -- die hook
 Hook('die', function(ply)
+    TTT.debug("die " .. ply.id .. " " .. ply.health)
+    
     if ply:is_mia() then
         ply:spawn(ply.x, ply.y)
+    
     elseif not ply:is_spectator() then
         ply:make_mia()
-        ply:make_spectator()
     end
+    
     Hud.update_health(ply)
     return 1
 end)
@@ -420,8 +430,8 @@ Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
         attacker = ply
     end
     
-    -- MIA's can't hit others
-    if attacker:is_mia() or ply:is_mia() then return 1 end
+    -- MIAs can hit eachother
+    if attacker:is_mia() or ply:is_mia() then return 0 end
     
     -- calculate new damage
     local newdmg = math.ceil(hpdmg * attacker.damagefactor)

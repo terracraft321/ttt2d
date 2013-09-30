@@ -25,7 +25,7 @@ TTT.round_started = os.time()
 TTT.round_count = 0
 -- setup debugging
 TTT.debug = Debug(true, function(message)
-    print("TTT DEBUG|")
+    print("TTT " .. os.time() .. "| " .. message)
     --msg(Color(220, 150, 150) .. "TTT " .. message)
 end)
 
@@ -460,7 +460,7 @@ end)
 Hook('second', function()
     -- current round time
     local time = os.time() - TTT.round_started
-    TTT.debug("time " .. time)
+    --TTT.debug("time " .. time)
     
     -- check if the preparing state should end
     if TTT:is_preparing() then

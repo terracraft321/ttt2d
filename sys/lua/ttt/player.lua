@@ -13,7 +13,7 @@ end
 function Player.mt:make_detective()
     self:set_role(ROLE_DETECTIVE)
     self:equip(41)
-    self:equip(78)
+    self:equip(59)
 end
 
 function Player.mt:make_spectator()

@@ -165,6 +165,7 @@ function Player.mt:make_mia(killer)
 end
 
 function Player.mt:reset_mia()
-    self:remove_body()
+    --self:remove_body()
+    self.body = nil
     self.mia = nil
 end

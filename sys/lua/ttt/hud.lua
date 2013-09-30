@@ -180,10 +180,10 @@ function Hud.mark_traitors()
 end
 
 function Hud.clear_traitors_ply(ply)
-    for _,img in pairs(ply.hud.traitors) do
-        Hud.debug(ply, ply.id .. ' clear_traitors_ply i' .. img.id)
-        img:remove()
-    end
+    --for _,img in pairs(ply.hud.traitors) do
+    --    Hud.debug(ply, ply.id .. ' clear_traitors_ply i' .. img.id)
+    --    img:remove()
+    --end
     ply.hud.traitors = nil
 end
 
@@ -217,10 +217,10 @@ function Hud.mark_detectives()
 end
 
 function Hud.clear_detectives()
-    for _,v in pairs(Hud.detectives) do
-        Hud.debug({}, ' clear_detectives i' .. v.id)
-        v:remove()
-    end
+    --for _,v in pairs(Hud.detectives) do
+    --    Hud.debug({}, ' clear_detectives i' .. v.id)
+    --    v:remove()
+    --end
     Hud.detectives = {}
 end
 

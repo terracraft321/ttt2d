@@ -292,7 +292,6 @@ Hook('spawn', function(ply)
     -- else let the player spawn
     else
         TTT.debug("spawn allow i" .. ply.id)
-        Hud.clear(ply)
         -- draw player's hud
         Timer(1, function()
             Karma.apply_karma(ply)

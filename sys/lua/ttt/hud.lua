@@ -205,7 +205,10 @@ function Hud.clear_marks()
 end
 
 function Hud.draw(ply)
-    if ply.hud or ply.bot then
+    if ply.bot then
+        return
+    elseif ply.hud then
+        Hud.clear(ply)
         return
     end
     Hud.debug(ply, ply.id .. ' draw')

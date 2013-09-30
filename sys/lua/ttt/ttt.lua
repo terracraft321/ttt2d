@@ -309,11 +309,7 @@ end)
 
 -- movetile hook
 Hook('movetile', function(ply, x, y)
-    if ply:is_mia() then
-        Hud.update_mia(ply, x, y)
-        return
-    
-    elseif ply:is_traitor() then
+    if ply:is_traitor() then
         ply:collect_more(x, y)
     end
 end)

@@ -192,38 +192,9 @@ function Hud.clear_detectives()
     Hud.detectives = {}
 end
 
-function Hud.update_mia(ply, x, y)
-    if Hud.mias[ply.id] then
-        Hud.mias[ply.id]:pos(x*32, y*32, 0)
-    end
-end
-
-function Hud.mark_mia(ply)
-    if Hud.mias[ply.id] then
-        Hud.mias[ply.id]:remove()
-    end
-    
-    -- seed the random
-    math.randomseed(os.time())
-    TTT.debug("tilecount " .. Map.tilecount)
-    
-    local tile = math.random(Map.tilecount)
-    TTT.debug("tile " .. tile)
-    local img = Image('<tile:' .. tile .. '>', ply.tilex*32, ply.tiley*32, 1)
-    Hud.mias[ply.id] = img
-end
-
-function Hud.clear_mias()
-    for _,v in pairs(Hud.mias) do
-        v:remove()
-    end
-    Hud.mias = {}
-end
-
 function Hud.clear_marks()
     Hud.clear_detectives()
     Hud.clear_traitors()
-    Hud.clear_mias()
 end
 
 function Hud.draw(ply)

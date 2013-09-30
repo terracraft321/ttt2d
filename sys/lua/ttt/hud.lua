@@ -5,19 +5,13 @@ Hud.timer = 0
 Hud.timer_txt = Hudtxt(0, 1)
 Hud.timer_color = Color(220, 220, 220)
 Hud.detectives = {}
-Hud.log = ''
 Hud.debug = Debug(true, function(message)
-    Hud.log = Hud.log .. message .. '\n'
-    if Hud.log:len() > 1000 then
-        local f = File('sys/lua/ttt/log/' .. os.time() .. '.txt')
-        f:write(Hud.log)
-        Hud.log = ''
-    end
+    msg(message)
 end)
 
 Hook('second', function()
-    Hud.timer = math.max(Hud.timer-1, 0)
     Hud.draw_timer()
+    Hud.timer = math.max(Hud.timer-1, 0)
 end)
 
 function Hud.set_timer(value)
@@ -40,6 +34,7 @@ function Hud.draw_damagefactor(ply)
 end
 
 function Hud.clear_base(ply)
+    if not ply.hud then return end
     if ply.hud.base then
         Hud.debug(ply.id .. ' clear_base i' .. ply.hud.base.id)
         ply.hud.base:remove()
@@ -48,6 +43,7 @@ function Hud.clear_base(ply)
 end
 
 function Hud.clear_role(ply)
+    if not ply.hud then return end
     if ply.hud.role then
         Hud.debug(ply.id .. ' clear_role i' .. ply.hud.role.id)
         ply.hud.role:remove()
@@ -56,6 +52,7 @@ function Hud.clear_role(ply)
 end
 
 function Hud.clear_health(ply)
+    if not ply.hud then return end
     if ply.hud.health then
         Hud.debug(ply.id .. ' clear_health i' .. ply.hud.health.id)
         ply.hud.health:remove()
@@ -64,6 +61,7 @@ function Hud.clear_health(ply)
 end
 
 function Hud.draw_base(ply)    
+    if not ply.hud then return end
     if ply.hud.base then
         Hud.clear_base(ply)
     end
@@ -74,6 +72,7 @@ function Hud.draw_base(ply)
 end
 
 function Hud.draw_role(ply)
+    if not ply.hud then return end
     if ply.hud.role then
         Hud.clear_role(ply)
     end
@@ -96,6 +95,7 @@ function Hud.draw_role(ply)
 end
 
 function Hud.draw_health(ply)
+    if not ply.hud then return end
     if ply.hud.health then
         Hud.clear_health(ply)
     end
@@ -108,6 +108,7 @@ function Hud.draw_health(ply)
 end
 
 function Hud.update_health(ply)
+    if not ply.hud then return end
     if not ply.hud.health then return end
     
     local speed = 350
@@ -127,7 +128,7 @@ function Hud.mark_traitors()
     local players = Player.table
     
     for _,ply in pairs(players) do
-        if ply:is_traitor() then  -- loop all traitors
+        if ply:is_traitor() and ply.hud then  -- loop all traitors
             if ply.hud.traitors then
                 Hud.clear_traitors_ply(ply)
             end
@@ -194,7 +195,7 @@ function Hud.clear_marks()
 end
 
 function Hud.draw(ply)
-    if ply.hud then
+    if ply.hud or ply.bot then
         return
     end
     Hud.debug(ply.id .. ' draw')
@@ -206,7 +207,7 @@ function Hud.draw(ply)
 end
 
 function Hud.clear(ply)
-    if not ply.hud then
+    if not ply.hud or ply.bot then
         return
     end
     Hud.debug(ply.id .. ' clear')

@@ -1,7 +1,9 @@
-function Player.mt:make_preparing(pos)
-    self:set_team(1)
-    self:spawn(pos.x, pos.y)
+function Player.mt:make_preparing()
     self:set_role(ROLE_PREPARING)
+    if self.team ~= 1 then
+        self:set_team(1)
+    end
+    --self:spawn(pos.x, pos.y)
 end
 
 function Player.mt:make_innocent()
@@ -24,7 +26,9 @@ end
 
 function Player.mt:make_spectator()
     self:set_role(ROLE_SPECTATOR)
-    self:set_team(0)
+    if self.team ~= 0 then
+        self:set_team(0)
+    end    
 end
 
 function Player.mt:is_preparing()

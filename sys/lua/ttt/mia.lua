@@ -130,6 +130,10 @@ function Player.mt:move_to_vip()
 end
 
 function Player.mt:make_mia(killer)
+    if type(killer) ~= 'table' then
+        killer = self
+    end
+    
     if self.weapon and self.weapon ~= 50 then
         Parse("spawnitem", self.weapon, self.tilex, self.tiley)
     end

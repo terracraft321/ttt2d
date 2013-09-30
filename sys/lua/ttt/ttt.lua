@@ -1,12 +1,16 @@
+-- load Love API
 dofile('sys/lua/lapi/lapi.lua')
 lapi.load('plugins/walk.lua')
 
+-- load other files
 dofile('sys/lua/ttt/hud.lua')
 dofile('sys/lua/ttt/player.lua')
 dofile('sys/lua/ttt/karma.lua')
 dofile('sys/lua/ttt/mia.lua')
 dofile('sys/lua/ttt/chat.lua')
+dofile('sys/lua/ttt/config.lua')
 
+-- scan the map for walkable tiles
 Walk.scan()
 
 -- game settings
@@ -22,118 +26,131 @@ Game.sv_fow = 1
 Game.mp_mapvoteratio = 0
 Parse('mp_wpndmg', 'USP', 30)
 
--- constant
-STATE_WAITING = 1
-STATE_STARTING = 2
-STATE_PREPARING = 3
-STATE_RUNNING = 4
-
-ROLE_INNOCENT = 1
-ROLE_TRAITOR = 2
-ROLE_DETECTIVE = 3
-ROLE_MIA = 4
-ROLE_SPECTATOR = 5
-ROLE_PREPARING = 6
-
--- config
-DEBUG = false
-WEAPON_1 = {30, 20, 10}
-WEAPON_2 = {2, 4, 69}
-TIME_PREPARE = 15
-TIME_GAME = 180
-TIME_NEXTROUND = 5
-
-Color.innocent = Color(20, 220, 20)
-Color.traitor = Color(220, 20, 20)
-Color.detective = Color(50, 80, 250)
-Color.spectator = Color(220, 220, 20)
-Color.white = Color(220, 220, 220)
-
+-- global table
 TTT = {}
-
--- variables
+-- current game state
 TTT.state = STATE_WAITING
+-- list of traitor names
 TTT.traitors = {}
-TTT.round_started = 0
+-- time when round has started
+TTT.round_started = os.time()
+-- current round number
 TTT.round_count = 0
-TTT.debug = Debug(false, function(message)
+-- setup debugging
+TTT.debug = Debug(true, function(message)
     msg(Color(220, 150, 150) .. "TTT " .. message)
 end)
 
 
+-- is the game starting?
 function TTT.is_starting()
     return TTT.state == STATE_STARTING
 end
 
+-- is the game waiting?
 function TTT.is_waiting()
     return TTT.state == STATE_WAITING
 end
 
+-- is the game preparing?
 function TTT.is_preparing()
     return TTT.state == STATE_PREPARING
 end
 
+-- is the game running?
 function TTT.is_running()
     return TTT.state == STATE_RUNNING
 end
 
+-- change game state
 function TTT.set_state(state)
     TTT.debug("set_state " .. state)
     TTT.state = state
 end
 
+-- called when round begins
 function TTT.round_begin()
     TTT.debug("round begin")
-    
-    TTT.round_count = TTT.round_count + 1
-    
-    TTT.set_state(STATE_PREPARING)
-    
+    -- clear all stuff from previous rounds
     Karma.round_begin()
-    TTT.clear_items()
     Mia.clear_all()
     Hud.clear_marks()
     
-    local players = Player.table 
-    for _,ply in pairs(players) do
-        local tilex,tiley = randomentity(1)
-        local pos = {x=tilex*32+16,y=tiley*32+16}
-        
-        Hud.draw(ply)
-        ply:make_preparing(pos)
-        
-        Hud.update_health(ply)
-    end
-    
-    TTT.spawn_items()
-    
+    -- modify variables
     TTT.round_started = os.time()
-    Hud.set_timer(TIME_PREPARE)
+    TTT.round_count = TTT.round_count + 1
     
-    msg(Color.white .. "Go get your weapons!@C")
+    -- start preparing state
+    TTT.preparing_begin()
 end
 
+-- called when round ends
 function TTT.round_end(winner)
-    TTT.debug("round begin")
+    TTT.debug("round end")
     
-    TTT.tell_traitors()
-    Mia.tell_killers()
-    Karma.round_end(winner)
+    -- set the game state to waiting
     TTT.set_state(STATE_WAITING)
     
-    if TTT.round_count >= 10 then
-        msg(Color.white .. "Map restart!@C")
-        Parse("map", Map.name)
-    end
+    -- tell who were the traitors
+    TTT.tell_traitors()
+    -- tell the killers of players
+    Mia.tell_killers()
+    -- update and save karma
+    Karma.round_end(winner)
 end
 
+-- called when preparing state begins
+function TTT.preparing_begin()
+    TTT.debug("preparing begin")
+    
+    -- set the game state to preparing and update timer
+    TTT.set_state(STATE_PREPARING)
+    Hud.set_timer(TIME_PREPARE)
+    
+    -- clear players and change their role to preparing
+    local players = Player.table
+    for _,ply in pairs(players) do
+        if ply.health > 0 then
+            ply.weapons = {50}
+        end
+        Hud.clear(ply)
+        ply:make_preparing()
+    end
+    
+    -- spawn ground items
+    TTT.spawn_items()
+end
+
+-- called when preparing state ends
+function TTT.preparing_end()
+    TTT.debug("preparing end")
+    
+    -- set the game state to running and update timer
+    TTT.set_state(STATE_RUNNING)
+    Hud.set_timer(TIME_GAME-TIME_PREPARE)
+    
+    -- move all dead players to spectators if they didn't spawn yet
+    local players = Player.table
+    for _,ply in pairs(players) do
+        if ply.health == 0 then
+            ply:make_spectator()
+        end
+    end
+    
+    -- select traitors and detectives
+    TTT.select_teams()
+end
+
+-- tell who were the traitors
 function TTT.tell_traitors()
     msg(Color.white .. "Traitors were:")
+    
     for _,str in pairs(TTT.traitors) do
         msg(Color.traitor .. str)
     end
 end
 
+-- select traitors and detectives
 function TTT.select_teams()
     TTT.debug("select teams")
     
@@ -141,31 +158,37 @@ function TTT.select_teams()
     local t_num = math.ceil(#players / 6)
     local d_num = math.floor(#players / 10)
     
+    -- select traitors
     TTT.traitors = {}
-    --Player(1):make_traitor()
-    for i=1,t_num do  -- select traitors
+    for i=1,t_num do
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
         
         ply:make_traitor()
     end
     
+    -- mark traitors with a red shadow
     Hud.mark_traitors()
     
-    for i=1,d_num do  -- select detectives
+    -- select detectives
+    for i=1,d_num do
         local rnd = math.random(#players)
         local ply = table.remove(players, rnd)
         
         ply:make_detective()
     end
     
+    -- mark detectives with a blue shadow
     Hud.mark_detectives()
     
-    for _,ply in pairs(players) do  -- select innocents
+    -- all other players are innocent
+    for _,ply in pairs(players) do
         ply:make_innocent()
     end
 end
 
+-- spawn items on the map
+-- TODO: rewrite this part
 function TTT.spawn_items()
     TTT.debug("spawn items")
     
@@ -190,6 +213,8 @@ function TTT.spawn_items()
     end
 end
 
+-- clear all items
+-- TODO: remove this
 function TTT.clear_items()
     TTT.debug("clear items")
 
@@ -203,6 +228,8 @@ function TTT.clear_items()
     end
 end
 
+-- get color code for the specific role
+-- TODO: this function doesn't belong to ttt.lua
 function TTT.get_color(role)
     if role == ROLE_TRAITOR then
         return Color.traitor
@@ -215,73 +242,144 @@ function TTT.get_color(role)
     end
 end
 
+-- join hook
+Hook('join', function(ply)
+    TTT.debug("join i" .. ply.id)
+    
+    -- init player variables
+    ply.joined = os.time()
+
+    -- load player karma
+    Karma.load_karma(ply)
+    
+    -- if the game is still preparing, let the player spawn
+    if TTT.is_preparing() then
+        ply:make_preparing()
+    -- else set its role to spectator
+    else
+        ply:set_role(ROLE_SPECTATOR)
+        -- after 1000ms draw hud
+        Timer(1000, function()
+            Hud.draw(ply)
+        end)
+    end
+end)
+
+-- startround_prespawn hook
+Hook('startround_prespawn', function()
+    -- begin the round
+    TTT.round_begin()
+end)
+
+-- spawn hook
+Hook('spawn', function(ply)
+    TTT.debug("spawn i" .. ply.id)
+    
+    -- if the game is already running, don't allow spawning
+    if TTT.is_running() then -- don't allow spawning
+        TTT.debug("spawn deny i" .. ply.id)
+        
+        -- a slight workaround
+        Timer(1, function()
+            ply:make_spectator()
+        end)
+        return 'x'
+    -- else let the player spawn
+    else
+        TTT.debug("spawn allow i" .. ply.id)
+        -- draw player's hud
+        Hud.draw(ply)
+        Hud.update_health(ply)
+        return 'x'
+    end
+end)
+
+-- startround hook
+-- not used anymore
+Hook('startround', function()
+    TTT.debug("startround ")
+end)
+
+-- endround hook
+-- not used anymore
+Hook('endround', function()
+    TTT.debug("endround")
+end)
+
+-- radio hook
 Hook('radio', function()
+    -- don't show message
     return 1
 end)
 
+-- drop hook
 Hook('drop', function(ply, iid, weapon)
+    -- switch weapon to knife
+    -- TODO: is this even necessary?
     Timer(1, function()
         ply.weapon = 50
     end)
 end)
 
+-- use hook
 Hook('use', function(ply)
+    -- loop all players
     local players = Player.table
-    
     for _,v in pairs(players) do
+        -- check if there's a body
         ply:use_body(v)
     end
 end)
 
+-- leave hook
 Hook('leave', function(ply)
-    print("leave " .. ply.name)
+    TTT.debug("leave i" .. ply.id)
+    
+    -- reset player specific data
     ply:reset_mia()
     Karma.save_karma(ply)
     Hud.clear(ply)
 end)
 
+-- vote hook
 Hook('vote', function(ply)
-    Karma.give_penalty(ply, 100)
+    -- voting costs some karma
+    Karma.give_penalty(ply, Karma.vote_penalty)
 end)
 
+-- buy hook
 Hook('buy', function(ply)
     ply:msg(Color.traitor .. "Buying is not allowed!@C")
     return 1
 end)
 
-Hook('spawn', function(ply)
-    return 'x'
-end)
-
-Hook('join', function(ply)
-    ply.joined = os.time()
-    ply:set_role(ROLE_SPECTATOR)
-    Karma.reset(ply)
-    Karma.load_karma(ply)
-    Timer(1000, function()
-        Hud.draw(ply)
-    end)
-end)
-
+-- die hook
 Hook('die', function(ply)
-    ply:make_spectator()
+    if not ply:is_spectator() then
+        ply:make_spectator()
+    end
     Hud.update_health(ply)
     return 1
 end)
 
+-- team hook
 Hook('team', function(ply, team)
-    --if lock_team then
+    -- don't change if not allowed to
     if not ply.allow_change then
         return 1
     end
 end)
 
+-- walkover hook
 Hook('walkover', function(ply, iid, wpn)
+    -- don't collect claws
     if wpn == 78 and not ply:is_detective() then
         return 1
     end
 end)
 
+-- attack hook
+-- TODO: rewrite DNA scanner
 Hook('attack', function(ply)
     if not ply.weapon == 78 then return end
     if not ply:is_detective() then return end
@@ -295,50 +393,65 @@ Hook('attack', function(ply)
     end
 end)
 
+-- hit hook
 Hook('hit', function(ply, attacker, weapon, hpdmg, apdmg, rawdmg)
-    TTT.debug("hit " .. ply.name .. " state " .. TTT.state)
+    TTT.debug("hit i" .. ply.id .. " w" .. weapon)
+    -- don't take damage if the game isn't running
     if not TTT:is_running() then return 1 end
 
+    -- TODO: rewrite DNA scanner
     if weapon == 78 and attacker:is_detective() then
         TTT.debug("scanplayer " .. attacker.name .. " " .. ply.name)
         attacker:scan_player(ply)
         return 1
     end
     
-    if type(attacker) ~= 'table' then return 0 end
+    -- if there's no attacker, he hit himself
+    if type(attacker) ~= 'table' then
+        attacker = ply
+    end
+    
+    -- MIA's can't hit others
     if attacker:is_mia() then return 1 end
     
+    -- calculate new damage
     local newdmg = math.ceil(hpdmg * attacker.damagefactor)
-    
+    -- calculate karma rewards/penalties for hurting
     Karma.hurt(attacker, ply, newdmg)
     
+    -- if the player didn't die
     if ply.health-newdmg > 0 then
         ply.health = ply.health - newdmg
-        
+    
     else
+        -- calculate karma rewards/penalties for killing
         Karma.killed(attacker, ply)
+        -- make the player Missing-in-Action
         ply:make_mia(attacker)
     end
     
+    -- update health bar
     Hud.update_health(ply)
     return 1
 end)
 
+-- second hook
 Hook('second', function()
-    local round_time = os.time() - TTT.round_started
+    -- current round time
+    local time = os.time() - TTT.round_started
+    TTT.debug("time " .. time)
     
+    -- check if the preparing state should end
     if TTT:is_preparing() then
-        if round_time >= TIME_PREPARE then
-            TTT.set_state(STATE_RUNNING)
-            TTT.select_teams()
-            Hud.set_timer(TIME_GAME-TIME_PREPARE)
-        end
-    
+        if time >= TIME_PREPARE then
+            TTT.preparing_end()
+        end    
+    -- if the game is running
     elseif TTT:is_running() then
         local players = Player.tableliving
         local t_num = 0
         local i_num = 0
-        
+        -- count number of traitors and not traitors alive
         for _,ply in pairs(players) do
             if ply:is_traitor() then
                 t_num = t_num + 1
@@ -347,21 +460,22 @@ Hook('second', function()
             end
         end
         
+        -- if there isn't any traitors
         if t_num == 0 then
             msg(table.concat({
                     Color.white, "All traitors are gone! ",
                     Color.innocent, "Innocent won!@C"}))
                     
             TTT.round_end(ROLE_INNOCENT)
-            
+        -- if there isn't any innocent or detectives
         elseif i_num == 0 then
             msg(table.concat({
                     Color.traitor, "Traitors ",
                     Color.white, "won!@C"}))
                     
             TTT.round_end(ROLE_TRAITOR)
-        
-        elseif round_time >= TIME_GAME then
+        -- if the time ran out
+        elseif time >= TIME_GAME then
             msg(table.concat({
                     Color.white, "Time ran out! ",
                     Color.traitor, "Traitors ",
@@ -369,26 +483,23 @@ Hook('second', function()
             
             TTT.round_end(ROLE_INNOCENT)
         end
-        
+    -- if the game is waiting
     elseif TTT:is_waiting() then
-        local players = Player.table
-        
         TTT.debug("waiting")
+        
+        local players = Player.table
+        -- if there's one than one player
         if #players > 1 then
             TTT.debug("starting")
+            -- start new round
             TTT.set_state(STATE_STARTING)
-            TTT.clear_items()
-            
+            Parse('endround', 1)
             msg(table.concat({
                     Color.white, "Next round in ",
-                    Color.traitor, TIME_NEXTROUND,
+                    Color.traitor, 5,
                     Color.white, " seconds@C"}))
 
-
-            Hud.set_timer(TIME_NEXTROUND)
-            Timer(TIME_NEXTROUND*1000, function()
-                TTT.round_begin()
-            end)
+            Hud.set_timer(5)
         end
     end
 end)

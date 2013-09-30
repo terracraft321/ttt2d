@@ -36,6 +36,7 @@ Karma.reset = 600
 Karma.halflife = 0.2
 Karma.regen = 5
 Karma.clean = 30
+Karma.speedmod = 7
 Karma.hurt_reward = 0.0003
 Karma.kill_reward = 40
 Karma.traitor_reward = 50

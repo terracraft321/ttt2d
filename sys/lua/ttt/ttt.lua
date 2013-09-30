@@ -288,8 +288,10 @@ Hook('spawn', function(ply)
     else
         TTT.debug("spawn allow i" .. ply.id)
         -- draw player's hud
-        Hud.draw(ply)
-        Hud.update_health(ply)
+        Timer(1, function()
+            Hud.draw(ply)
+            Hud.update_health(ply)
+        end)
         return 'x'
     end
 end)

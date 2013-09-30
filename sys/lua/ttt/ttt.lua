@@ -330,13 +330,15 @@ Hook('movetile', function(ply, x, y)
     local weapons = ply.weapons
     for _,item in pairs(weapons) do
         if item == 32 and ply.weapon ~= 32 then
+            TTT.debug("re-equip " .. ply.id)
             ply:strip(32)
-            Timer(1, function()
+            Timer(100, function()
                 ply:equip(32)
             end)
         elseif item == 1 and ply.weapon ~= 1 then
+            TTT.debug("re-equip " .. ply.id)
             ply:strip(1)
-            Timer(1, function()
+            Timer(100, function()
                 ply:equip(1)
             end)
         end

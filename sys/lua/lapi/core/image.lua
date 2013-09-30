@@ -4,8 +4,15 @@ Image = {}
 Image.mt = {}
 
 setmetatable(Image, {
-    __call = function(_, path, x, y, mode, ...)
-        return setmetatable({id = image(path, x, y, mode, unpack({...}))}, Image.mt)
+    __call = function(_, path, x, y, mode, pl)
+        local img = 0
+        if pl then
+            img = image(path, x, y, mode, pl)
+        else
+            img = image(path, x, y, mode)
+        end
+        print("Love API img = " .. img)
+        return setmetatable({id = img}, Image.mt)
     end,
     __index = function(_, key)
         local m = rawget(Image, key)

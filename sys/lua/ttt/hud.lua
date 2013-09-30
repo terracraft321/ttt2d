@@ -16,7 +16,32 @@ end)
 Hook('second', function()
     Hud.draw_timer()
     Hud.timer = math.max(Hud.timer-1, 0)
+    
+    Hud.check_errors()
 end)
+
+function Hud.collide(set, value)
+    if set[value] then
+        return true
+    else
+        set[value] = true
+        return false
+    end
+end
+
+function Hud.check_errors()
+    local players = Player.table
+    local set = {}
+    for _,ply in pairs(players) do
+        if ply.hud then
+            for k,v in pairs(ply.hud) do
+                if v.id and Hud.collide(set, v.id) then
+                    msg("HUD IMAGE ERROR! " .. ply.name)
+                end
+            end
+        end
+    end
+end
 
 function Hud.set_timer(value)
     Hud.timer = math.max(value, 0)

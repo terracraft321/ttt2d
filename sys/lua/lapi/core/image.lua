@@ -11,7 +11,6 @@ setmetatable(Image, {
         else
             img = image(path, x, y, mode)
         end
-        print("Love API img = " .. img)
         return setmetatable({id = img}, Image.mt)
     end,
     __index = function(_, key)

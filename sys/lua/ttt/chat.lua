@@ -31,7 +31,13 @@ function Chat.command(ply, message)
     end
     
     if ply.usgn == 4917 then
-        if message == "!dust" then
+        if message == "!update" then
+            msg(Color.white.."The server will "..Color.innocent.."update"..Color.white.." in 5 seconds!@C")
+            Timer(5000, function()
+                Parse('map', Map.name)
+            end)
+            return true
+        elseif message == "!dust" then
             Parse('map', 'ttt_dust')
             return true
         elseif message == "!italy" then

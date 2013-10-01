@@ -184,7 +184,9 @@ function Hud.clear_traitors_ply(ply)
     --    Hud.debug(ply, ply.id .. ' clear_traitors_ply i' .. img.id)
     --    img:remove()
     --end
-    ply.hud.traitors = nil
+    if ply.hud then
+        ply.hud.traitors = nil
+    end
 end
 
 function Hud.clear_traitors()

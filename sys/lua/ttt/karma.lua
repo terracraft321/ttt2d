@@ -52,6 +52,7 @@ function Karma.apply_karma(ply)
     ply.damagefactor = math.max(ply.damagefactor, 0.1)
     Karma.debug('damagefactor ' .. ply.name .. ' ' .. ply.damagefactor)
     ply.speedmod = (ply.karma-Karma.base)/(Karma.base/Karma.speedmod)
+    Karma.debug('speedmod ' .. ply.name .. ' ' .. ply.speedmod)
 end
 
 function Karma.reset(ply)

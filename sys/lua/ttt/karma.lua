@@ -135,17 +135,23 @@ function Karma.save_karma(ply)
     Karma.debug('save ' .. ply.name .. ' ' .. ply.usgn)
 end
 
-function Karma.round_begin()
-    local players = Player.table
-    
-    for _,ply in pairs(players) do
-        if not ply.karma then
-            Karma.load_karma(ply)
-        end
+function Karma.spawn(ply)
+    if not ply.karma then
+        Karma.load_karma(ply)
+    end
+    if ply:is_preparing() then
         ply.score = ply.karma
         ply.karma_clean = true
         Karma.apply_karma(ply)
         Hud.draw_damagefactor(ply)
+    end
+end
+
+function Karma.round_begin()
+    local players = Player.table
+    
+    for _,ply in pairs(players) do
+        Karma.spawn(ply)
     end
 end
 

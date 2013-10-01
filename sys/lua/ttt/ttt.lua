@@ -72,7 +72,7 @@ end
 function TTT.round_begin()
     TTT.debug("round begin")
     -- clear all stuff from previous rounds
-    Karma.round_begin()
+    --Karma.round_begin()
     Mia.clear_all()
     Hud.clear_marks()
     
@@ -299,7 +299,7 @@ Hook('spawn', function(ply)
         TTT.debug("spawn allow " .. ply.id)
         -- draw player's hud
         Timer(1, function()
-            Karma.apply_karma(ply)
+            Karma.spawn(ply)
             Hud.draw(ply)
             Hud.update_health(ply)
         end)

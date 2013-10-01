@@ -191,7 +191,7 @@ function Hud.clear_traitors()
     local players = Player.table
     
     for _,ply in pairs(players) do
-        if ply.hud and ply.hud.traitors then
+        if ply.hud then
             Hud.clear_traitors_ply(ply)
         end
     end
@@ -230,12 +230,10 @@ function Hud.clear_marks()
 end
 
 function Hud.draw(ply)
-    if ply.bot then
-        return
-    elseif ply.hud then
-        Hud.clear(ply)
+    if ply.hud or ply.bot then
         return
     end
+    
     Hud.debug(ply, ply.id .. ' draw')
     ply.hud = {}
     
@@ -248,6 +246,7 @@ function Hud.clear(ply)
     if not ply.hud or ply.bot then
         return
     end
+    
     Hud.debug(ply, ply.id .. ' clear')
     Hud.clear_base(ply)
     Hud.clear_role(ply)

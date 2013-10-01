@@ -76,6 +76,11 @@ function TTT.round_begin()
     Mia.clear_all()
     Hud.clear_marks()
     
+    local players = Player.table
+    for _,ply in pairs(players) do
+        Hud.clear(ply)
+    end
+    
     -- modify variables
     TTT.round_started = os.time()
     TTT.round_count = TTT.round_count + 1
@@ -113,7 +118,6 @@ function TTT.preparing_begin()
         if ply.health > 0 then
             ply.weapons = {50}
         end
-        Hud.clear(ply)
         ply:make_preparing()
     end
     
@@ -283,7 +287,7 @@ Hook('spawn', function(ply)
     
     -- if the game is already running, don't allow spawning
     if TTT.is_running() then -- don't allow spawning
-        TTT.debug("spawn deny i" .. ply.id)
+        TTT.debug("spawn deny " .. ply.id)
         
         -- a slight workaround
         Timer(1, function()
@@ -292,7 +296,7 @@ Hook('spawn', function(ply)
         return 'x'
     -- else let the player spawn
     else
-        TTT.debug("spawn allow i" .. ply.id)
+        TTT.debug("spawn allow " .. ply.id)
         -- draw player's hud
         Timer(1, function()
             Karma.apply_karma(ply)
@@ -353,6 +357,7 @@ Hook('leave', function(ply)
     -- reset player specific data
     ply:reset_mia()
     Karma.save_karma(ply)
+    Hud.clear_traitors_ply(ply)
     Hud.clear(ply)
 end)
 

@@ -5,8 +5,12 @@ Image.mt = {}
 
 setmetatable(Image, {
     __call = function(_, path, x, y, mode, ...)
-        local img = image(path, x, y, mode, unpack({...}))
-        return setmetatable({id = img}, Image.mt)
+        if type(path) == 'string' then
+            local img = image(path, x, y, mode, unpack({...}))
+            return setmetatable({id = img}, Image.mt)
+        elseif type(path) == 'number' then
+            return setmetatable({id = path}, Image.mt)
+        end
     end,
     __index = function(_, key)
         local m = rawget(Image, key)

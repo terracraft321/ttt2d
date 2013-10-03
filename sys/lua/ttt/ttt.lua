@@ -16,7 +16,6 @@ dofile('sys/lua/ttt/chat.lua')
 
 -- scan the map for walkable tiles
 Walk.scan()
-w
 -- current game state
 TTT.state = STATE_WAITING
 -- time when round has started

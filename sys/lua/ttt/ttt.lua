@@ -10,9 +10,9 @@ dofile('sys/lua/ttt/hud.lua')
 dofile('sys/lua/ttt/player.lua')
 dofile('sys/lua/ttt/karma.lua')
 dofile('sys/lua/ttt/mia.lua')
-dofile('sys/lua/ttt/chat.lua')
 dofile('sys/lua/ttt/traitor.lua')
 dofile('sys/lua/ttt/config.lua')
+dofile('sys/lua/ttt/chat.lua')
 
 -- scan the map for walkable tiles
 Walk.scan()
@@ -40,6 +40,7 @@ Game.mp_radar = 0
 Game.sv_gamemode = 2
 Game.sv_fow = 1
 Game.mp_mapvoteratio = 0
+Game.mp_shotweakening = 100
 Parse('mp_wpndmg', 'USP', 35)
 
 -- is the game starting?
@@ -247,6 +248,18 @@ function TTT.get_color(role)
     end
 end
 
+-- set player rank
+-- TODO: load from a file
+function TTT.set_rank(ply)
+    if ply.usgn == 4917 then
+        ply.rank = RANK_ADMIN
+    elseif ply.usgn == 95753 then
+        ply.rank = RANK_MODERATOR
+    else
+        ply.rank = RANK_GUEST
+    end
+end
+
 -- join hook
 Hook('join', function(ply)
     TTT.debug("join i" .. ply.id)
@@ -256,6 +269,9 @@ Hook('join', function(ply)
 
     -- load player karma
     Karma.load_karma(ply)
+    
+    -- set player rank
+    TTT.set_rank(ply)
     
     -- if the game is still preparing, let the player spawn
     if TTT.is_preparing() then

@@ -19,6 +19,12 @@ ROLE_MIA = 4
 ROLE_SPECTATOR = 5
 ROLE_PREPARING = 6
 
+-- player ranks
+RANK_GUEST = 1
+RANK_VIP = 2
+RANK_MODERATOR = 3
+RANK_ADMIN = 4
+
 -- ground items
 WEAPON_1 = {30, 20, 10}
 WEAPON_2 = {2, 4, 69}

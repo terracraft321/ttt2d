@@ -1,6 +1,17 @@
 -- list of traitor names
 TTT.traitors = {}
 
+-- get a table of player objects
+function TTT.get_traitors()
+    local players = Player.table
+    for k,ply in pairs(players) do
+        if not ply:is_traitor() then
+            table.remove(players, k)
+        end
+    end
+    return players
+end
+
 -- tell who were the traitors
 function TTT.tell_traitors()
     msg(Color.white .. "Traitors were:")

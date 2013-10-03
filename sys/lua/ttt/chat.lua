@@ -1,4 +1,14 @@
 Chat = {}
+Chat.commands = {}
+Chat.privileges = {}
+
+function Chat.add_command(cmd, desc, rank, func)
+    if Chat.commands[cmd] then
+        error("Chat command already exists: " .. cmd)
+    else
+        Chat.commands[cmd] = {desc = desc, rank = rank, func = func}
+    end
+end
 
 function Chat.literalize(str)
     return str:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", function(c) return "%" .. c end)
@@ -23,53 +33,27 @@ function Chat.shortcut(message)
 end
 
 function Chat.command(ply, message)
-    if message == "!resethud" then
-        Hud.clear(ply)
-        Hud.draw(ply)
-        Hud.update_health(ply)
-        return true
-    elseif message == "!debughud" then
-        ply.debug_hud = true
+    local command = message:match("^[!/]%a+")
+    
+    if not command then
+        return false
+    end
+    
+    if not Chat.commands[command:sub(2)] then
+        ply:msg(Color.traitor .. "Command not found!")
         return true
     end
     
-    if ply.usgn == 4917 then
-        if message == "!update" then
-            msg(Color.white.."The server will "..Color.innocent.."update"..Color.white.." in 5 seconds!@C")
-            Timer(5000, function()
-                Parse('map', Map.name)
-            end)
-            return true
-        elseif message == "!dust" then
-            Parse('map', 'ttt_dust')
-            return true
-        elseif message == "!italy" then
-            Parse('map', 'ttt_italy')
-            return true
-        elseif message == "!suspicion" then
-            Parse('map', 'ttt_suspicion')
-            return true
-        elseif message == "!debug" then
-            TTT.debug.state = not TTT.debug.state
-            return true
-        elseif message == "!endt" then
-            TTT.round_end(ROLE_TRAITOR)
-            return true
-        elseif message == "!endi" then
-            TTT.round_end(ROLE_INNOCENT)
-            return true
-        elseif string.starts(message, "!reset") then
-            local id = tonumber(message:sub(8))
-            local t = Player(id)
-            t.karma = 1000
-            t.score = 1000
-            return true
-        elseif string.starts(message, "!bc") then
-            local txt = message:sub(5)
-            msg(Color.white .. txt .. "@C")
-            return true
-        end        
+    local func = Chat.commands[command:sub(2)].func
+    local rank = Chat.commands[command:sub(2)].rank
+    
+    if ply.rank < rank then
+        ply:msg(Color.traitor .. "You're not allowed to use that command!")
+    else
+        TTT.debug(ply.name .. " used command " .. message)
+        func(ply, message:sub(command:len()+2))
     end
+    return true
 end
 
 function Chat.format(ply, message, role)
@@ -137,4 +121,69 @@ Hook('sayteam', function(ply, message)
     end
     
     return 1
+end)
+
+Chat.add_command("commands", "Show commands available", RANK_GUEST, function(ply, arg)
+    for command,tbl in pairs(Chat.commands) do
+        if ply.rank >= tbl.rank then
+            ply:msg(Color.white .. command .. " | " .. tbl.desc)
+        end
+    end
+end)
+
+Chat.add_command("resethud", "Reset your hud", RANK_GUEST, function(ply, arg)
+    Hud.clear(ply)
+    Hud.draw(ply)
+    Hud.update_health(ply)
+end)
+
+Chat.add_command("map", "Change map", RANK_MODERATOR, function(ply, arg)
+    Parse('map', arg)
+end)
+
+Chat.add_command("maplist", "List official maps", RANK_MODERATOR, function(ply, arg)
+    ply:msg(Color.white .. "ttt_dust")
+    ply:msg(Color.white .. "ttt_italy")
+    ply:msg(Color.white .. "ttt_suspicion")
+end)
+
+Chat.add_command("bc", "Broadcast a message", RANK_MODERATOR, function(ply, arg)
+    msg(Color.white .. arg)
+end)
+
+Chat.add_command("t_win", "Traitors win", RANK_ADMIN, function(ply, arg)
+    if TTT.is_running() then
+        TTT.round_end(ROLE_TRAITOR)
+    end
+end)
+
+Chat.add_command("i_win", "Innocent win", RANK_ADMIN, function(ply, arg)
+    if TTT.is_running() then
+        TTT.round_end(ROLE_TRAITOR)
+    end
+end)
+
+Chat.add_command("reset", "Reset player's karma", RANK_ADMIN, function(ply, arg)
+    local id = tonumber(arg)
+    Player(id).karma = Karma.base
+    Player(id).score = Karma.base
+    Karma.apply_karma(Player(id))
+end)
+
+Chat.add_command("ban", "Ban player for 6 hours", RANK_MODERATOR, function(ply, arg)
+    local id = tonumber(arg)
+    if not Player(id) or not Player(id).exists then
+        ply:msg(Color.traitor .. "Player with that ID doesn't exist")
+        return
+    end
+    Player(id):banusgn(6*60, "Banned by " .. ply.name)
+end)
+
+Chat.add_command("kick", "Kick player", RANK_MODERATOR, function(ply, arg)
+    local id = tonumber(arg)
+    if not Player(id) or not Player(id).exists then
+        ply:msg(Color.traitor .. "Player with that ID doesn't exist")
+        return
+    end
+    Player(id):kick("Kicked by " .. ply.name)
 end)

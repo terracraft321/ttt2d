@@ -47,6 +47,14 @@ function Player.mt:is_spectator()
     return self.role == ROLE_SPECTATOR
 end
 
+function Player.mt:is_admin()
+    return self.rank >= RANK_ADMIN
+end
+
+function Player.mt:is_moderator()
+    return self.rank >= RANK_MODERATOR
+end
+
 function Player.mt:set_team(value)
     --lock_team = false
     self.allow_change = true

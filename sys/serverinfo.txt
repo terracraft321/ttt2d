@@ -8,11 +8,12 @@
 ©255255255Every round a small group of Traitors is randomly picked. Together they have to kill all the Innocent. However the Innocent do not know who is a Traitor and who isn't. You can trust nobody.
 
 ©150150150  Karma
-©255255255Your score on scoreboard is your karma and it tells you how well you play. If you let your karma drop below 1000, you'll get punished e.g. your damage towards other players is reduced.
+©255255255Your score on scoreboard is your karma and it tells you how well you play. If you let your karma drop below 1000, you'll get punished e.g. your damage towards other players is reduced. If your karma drops below 500, you'll get banned for 5 minutes.
 
 ©150150150  Useful facts
 ©255255255- Found a body? Press E on it!
 ©255255255- Traitor usually has a m4a1
+©255255255- Type !commands for command list
 ©255255255- Voting costs you 100 karma
 ©255255255- DF means DamageFactor e.g. DF0.5 means you do only 50% damage
 ©255255255- Penalty depends on victim's karma

@@ -176,7 +176,7 @@ function Karma.round_end(winner)
         Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))
         
         if ply.karma < Karma.kick and not ply.bot then
-            ply:kick("Your karma went too low. Please read the rules!")
+            ply:banusgn(5, "Your karma went too low. Banned for 5 minutes!")
         end
         ply.score = ply.karma
     end

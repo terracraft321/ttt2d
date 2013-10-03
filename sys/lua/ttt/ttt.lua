@@ -16,7 +16,7 @@ dofile('sys/lua/ttt/chat.lua')
 
 -- scan the map for walkable tiles
 Walk.scan()
-
+w
 -- current game state
 TTT.state = STATE_WAITING
 -- time when round has started
@@ -215,21 +215,6 @@ function TTT.spawn_items()
             local wep = WEAPON_2[math.random(#WEAPON_1)]
             local pos = Walk.random()
             Parse('spawnitem', wep, pos.x, pos.y)
-        end)
-    end
-end
-
--- clear all items
--- TODO: remove this
-function TTT.clear_items()
-    TTT.debug("clear items")
-
-    local items = item(0,"table")
-    for i,id in pairs(items) do
-        Timer(i*50, function()
-            if item(id, "player") == 0 then
-                Parse('removeitem', id)
-            end
         end)
     end
 end

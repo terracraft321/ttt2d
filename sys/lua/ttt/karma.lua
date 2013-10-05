@@ -90,6 +90,10 @@ function Karma.killed(attacker, victim)
         local reward = Karma.get_kill_reward()
         Karma.give_reward(attacker, reward)
         
+        if #Player.table >= Karma.min_players then
+            attacker.points = attacker.points + (attacker.karma/Karma.base)
+        end
+        
         Karma.debug('killed reward ' .. attacker.name .. ' ' .. reward)
     
     elseif attacker:is_traitor() == victim:is_traitor() then
@@ -179,7 +183,7 @@ function Karma.round_end(winner)
             end
         end
         
-        if ply.karma < Base.karma then
+        if ply.karma < Karma.base then
             Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))
         end
         

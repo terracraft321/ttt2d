@@ -104,6 +104,7 @@ function Player.mt:reset_data()
     self.playtime = 0
     self.rank = RANK_GUEST
     self.savetime = os.time()
+    self.points = 0
 end
 
 function Player.mt:save_data()
@@ -119,7 +120,8 @@ function Player.mt:save_data()
     f:write({
         karma = self.karma,
         playtime = self.playtime,
-        rank = self.rank
+        rank = self.rank,
+        points = self.points
     })
     
     TTT.debug('save ' .. self.name .. ' ' .. self.usgn)

@@ -94,7 +94,7 @@ function Karma.killed(attacker, victim)
         Karma.debug('killed penalty ' .. attacker.name .. ' ' .. penalty)
     end
 end
-
+-- TODO: remove this
 function Karma.load_karma(ply)
     if not ply.usgn then
         ply.karma = Karma.player_base
@@ -123,7 +123,7 @@ function Karma.load_karma(ply)
     Karma.debug('loaded ' .. ply.name .. ' ' .. ply.karma)
 end
 
--- TODO: store also other data
+-- TODO: remove this
 function Karma.save_karma(ply)
     if not ply.usgn then
         return
@@ -137,7 +137,8 @@ end
 
 function Karma.spawn(ply)
     if not ply.karma then
-        Karma.load_karma(ply)
+        ply:reset_data()
+        ply:load_data()
     end
     if ply:is_preparing() then
         ply.score = ply.karma
@@ -160,9 +161,8 @@ function Karma.round_end(winner)
     
     for _,ply in pairs(players) do
         if not ply.karma then
-            Karma.load_karma(ply)
-        else
-            Karma.save_karma(ply)
+            ply:reset_data()
+            ply:load_data()
         end
         
         if ply:is_traitor() then

@@ -102,6 +102,11 @@ function TTT.round_end(winner)
     Mia.tell_killers()
     -- update and save karma
     Karma.round_end(winner)
+    
+    local players = Player.table
+    for _,ply in pairs(players) do
+        ply:save_data()
+    end
 end
 
 -- called when preparing state begins
@@ -232,18 +237,6 @@ function TTT.get_color(role)
     end
 end
 
--- set player rank
--- TODO: load from a file
-function TTT.set_rank(ply)
-    if ply.usgn == 4917 then
-        ply.rank = RANK_ADMIN
-    elseif ply.usgn == 95753 then
-        ply.rank = RANK_MODERATOR
-    else
-        ply.rank = RANK_GUEST
-    end
-end
-
 -- join hook
 Hook('join', function(ply)
     TTT.debug("join i" .. ply.id)
@@ -251,11 +244,11 @@ Hook('join', function(ply)
     -- init player variables
     ply.joined = os.time()
 
-    -- load player karma
-    Karma.load_karma(ply)
-    
-    -- set player rank
-    TTT.set_rank(ply)
+    -- reset player data
+    ply:reset_data()
+
+    -- load player data from saves
+    ply:load_data()
     
     -- if the game is still preparing, let the player spawn
     if TTT.is_preparing() then
@@ -356,7 +349,7 @@ Hook('leave', function(ply)
     
     -- reset player specific data
     ply:reset_mia()
-    Karma.save_karma(ply)
+    ply:save_data()
     Hud.clear_traitors_ply(ply)
     Hud.clear(ply)
 end)

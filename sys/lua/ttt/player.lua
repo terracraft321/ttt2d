@@ -98,3 +98,61 @@ function Player.mt:welcome_back(time)
         self:remind("Welcome back, " .. self.name .. "!@C")
     end)
 end
+
+function Player.mt:reset_data()
+    self.karma = Karma.base
+    self.playtime = 0
+    self.rank = RANK_GUEST
+    self.savetime = os.time()
+end
+
+function Player.mt:save_data()
+    if not self.usgn then
+        return
+    end
+    
+    local timenow = os.time()
+    self.playtime = self.playtime + (timenow - self.savetime)
+    self.savetime = timenow
+    
+    local f = File('sys/lua/ttt/saves/' .. self.usgn .. '.txt')
+    f:write({
+        karma = self.karma,
+        playtime = self.playtime,
+        rank = self.rank
+    })
+    
+    TTT.debug('save ' .. self.name .. ' ' .. self.usgn)
+end
+
+function Player.mt:load_data()
+    if not self.usgn then
+        self.karma = Karma.player_base
+        self:remind_karma_limited(5000)
+        self:remind_new_player(7000)
+        return
+    end
+    
+    self.savetime = os.time()
+    
+    TTT.debug("load " .. self.name)
+    local f = File('sys/lua/ttt/saves/' .. self.usgn .. '.txt')
+    local data = f:read()
+    
+    if type(data) ~= 'table' then
+        self:remind_new_player(3000)
+        return
+    end
+    
+    for k,v in pairs(data) do
+        TTT.debug("load " .. k .. " = " .. v)
+        self[k] = v
+    end
+    
+    if self.karma < Karma.reset then
+        self.karma = Karma.reset
+    end
+    
+    self:welcome_back(3000)
+    TTT.debug('loaded ' .. self.name)
+end

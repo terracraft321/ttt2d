@@ -13,6 +13,9 @@ function Karma.get_kill_reward()
 end
 
 function Karma.give_reward(ply, value)
+    if #Player.table < Karma.min_players then
+        return
+    end
     if ply.karma > 1000 then -- make it harder to reach Karma.max
         local halflife = (Karma.max-Karma.base) * Karma.halflife
         value = value * math.exponential_decay(halflife, ply.karma-Karma.base)
@@ -39,6 +42,9 @@ function Karma.get_kill_penalty(victim_karma)
 end
 
 function Karma.give_penalty(ply, value)
+    if #Player.table < Karma.min_players then
+        return
+    end
     ply.karma = math.max(ply.karma-value, 0)
 end
 

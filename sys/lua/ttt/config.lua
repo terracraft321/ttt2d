@@ -50,3 +50,4 @@ Karma.hurt_penalty = 0.0015
 Karma.kill_penalty = 15
 Karma.vote_penalty = 100
 Karma.traitor_penalty = 50
+Karma.min_players = 4

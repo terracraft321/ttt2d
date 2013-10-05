@@ -203,8 +203,8 @@ function TTT.spawn_items()
     TTT.debug("spawn items")
     
     local players = Player.tableliving
-    local wpn_1 = math.max(#players, 5)
-    local wpn_2 = math.max(math.floor(#players * 1.5), 10)
+    local wpn_1 = math.max(math.random(#players, #players*2), 8)
+    local wpn_2 = math.max(math.random(#players, #players*2), 8)
     
     for i=1,wpn_1 do
         Timer(i*50, function()

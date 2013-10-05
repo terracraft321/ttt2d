@@ -145,6 +145,7 @@ Chat.add_command("maplist", "List official maps", RANK_MODERATOR, function(ply, 
     ply:msg(Color.white .. "ttt_dust")
     ply:msg(Color.white .. "ttt_italy")
     ply:msg(Color.white .. "ttt_suspicion")
+    ply:msg(Color.white .. "ttt_trauma")
 end)
 
 Chat.add_command("bc", "Broadcast a message", RANK_MODERATOR, function(ply, arg)

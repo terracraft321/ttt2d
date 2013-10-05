@@ -33,7 +33,7 @@ function Chat.shortcut(message)
 end
 
 function Chat.command(ply, message)
-    local command = message:match("^[!/]%a+")
+    local command = message:match("^[!/][%a_]+")
     
     if not command then
         return false
@@ -186,4 +186,13 @@ Chat.add_command("kick", "Kick player", RANK_MODERATOR, function(ply, arg)
         return
     end
     Player(id):kick("Kicked by " .. ply.name)
+end)
+
+Chat.add_command("make_moderator", "Make moderator", RANK_ADMIN, function(ply, arg)
+    local id = tonumber(arg)
+    if not Player(id) or not Player(id).exists then
+        ply:msg(Color.traitor .. "Player with that ID doesn't exist")
+        return
+    end
+    Player(id).rank = RANK_MODERATOR
 end)

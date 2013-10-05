@@ -179,7 +179,9 @@ function Karma.round_end(winner)
             end
         end
         
-        Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))
+        if ply.karma < Base.karma then
+            Karma.give_reward(ply, Karma.regen + (ply.karma_clean and Karma.clean or 0))
+        end
         
         if ply.karma < Karma.kick and not ply.bot then
             ply:banusgn(5, "Your karma went too low. Banned for 5 minutes!")

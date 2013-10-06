@@ -107,6 +107,20 @@ function TTT.round_end(winner)
     for _,ply in pairs(players) do
         ply:save_data()
     end
+    
+    if TTT.round_count > 4 then
+        local map = Map.name
+        local id = 1
+        for k,v in pairs(TTT.maps) do
+            if v == map then
+                id = k
+            end
+        end
+        msg(Color.white .. "Map change!")
+        Timer(4000, function()
+            Parse('map', TTT.maps[(id+1) % #TTT.maps])
+        end)
+    end
 end
 
 -- called when preparing state begins

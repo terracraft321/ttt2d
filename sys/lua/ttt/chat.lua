@@ -142,10 +142,9 @@ Chat.add_command("map", "Change map", RANK_MODERATOR, function(ply, arg)
 end)
 
 Chat.add_command("maplist", "List official maps", RANK_MODERATOR, function(ply, arg)
-    ply:msg(Color.white .. "ttt_dust")
-    ply:msg(Color.white .. "ttt_italy")
-    ply:msg(Color.white .. "ttt_suspicion")
-    ply:msg(Color.white .. "ttt_trauma")
+    for _,map in pairs(TTT.maps) do
+        ply:msg(Color.white .. map)
+    end
 end)
 
 Chat.add_command("bc", "Broadcast a message", RANK_MODERATOR, function(ply, arg)

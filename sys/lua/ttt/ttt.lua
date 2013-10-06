@@ -110,7 +110,7 @@ function TTT.round_end(winner)
     end
     
     -- map rotating
-    if TTT.round_count > 4 then
+    if TTT.round_count > 10 then
         local map = Map.name
         local id = 1
         for k,v in pairs(TTT.maps) do

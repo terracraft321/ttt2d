@@ -103,11 +103,13 @@ function TTT.round_end(winner)
     -- update and save karma
     Karma.round_end(winner)
     
+    -- save every player
     local players = Player.table
     for _,ply in pairs(players) do
         ply:save_data()
     end
     
+    -- map rotating
     if TTT.round_count > 4 then
         local map = Map.name
         local id = 1

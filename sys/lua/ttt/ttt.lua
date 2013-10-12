@@ -119,7 +119,7 @@ function TTT.round_end(winner)
             end
         end
         TTT.debug("map id " .. id)
-        local newmap = TTT.maps[(id+1) % #TTT.maps]
+        local newmap = TTT.maps[(id % #TTT.maps) + 1]
         msg(Color.white .. "Mapchange!@C")
         Timer(4000, function()
             Parse('map', newmap)

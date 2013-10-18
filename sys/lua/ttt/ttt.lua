@@ -177,7 +177,7 @@ function TTT.select_teams()
     
     local players = Player.tableliving
     local t_num = math.ceil(#players / 6)
-    local d_num = math.floor(#players / 10)
+    local d_num = math.floor(#players / 9)
     
     -- remove mias from list
     for k,ply in pairs(players) do

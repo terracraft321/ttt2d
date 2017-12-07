@@ -7,8 +7,7 @@ for file_name in glob.glob('./*.lua'):
         storage += file_name + ':\n'
         for line in f:
             if 'function ' in line:
-                storage += line[9:]
-                
+                storage += line[9:]                
         storage += '\n'
 
 print storage
